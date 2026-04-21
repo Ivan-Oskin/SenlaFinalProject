@@ -4,5 +4,5 @@ author_id integer not null,
 ads_id integer not null, 
 rating integer not null,
 comment text,
-create_date_time timestamp not null
+created_date_time timestamp not null
 )
