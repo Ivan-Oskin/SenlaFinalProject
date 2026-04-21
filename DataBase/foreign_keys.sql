@@ -1,0 +1,13 @@
+--alter table users add foreign key(role_id) references roles(id)
+--alter table profiles add foreign key(user_id) references users(id)on delete cascade
+--alter table profiles add foreign key(city_id) references cities(id)
+--alter table dialogs add foreign key(buyer_id) references users(id) on delete cascade
+--alter table dialogs add foreign key(ad_id) references ads(id) on delete cascade
+--alter table messages add foreign key(dialog_id) references dialogs(id) on delete cascade
+--alter table messages add foreign key(user_id) references users(id) on delete set null
+--alter table ads add foreign key(seller_id) references users(id) on delete cascade
+--alter table ads add foreign key(city_id) references cities(id)
+--alter table reviews add foreign key(ad_id) references ads(id) on delete cascade
+--alter table reviews add foreign key(author_id) references users(id) on delete set null
+--alter table deals add foreign key(ad_id) references ads(id) on delete cascade
+--alter table deals add foreign key(buyer_id) references users(id) on delete cascade
