@@ -1,7 +1,13 @@
 package com.oskin.ad_board.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "roles")
 public class Role implements IIdentified {
+    @Id
     private int id;
+    @Column(name = "name")
     private String name;
 
     public Role(int id, String name) {

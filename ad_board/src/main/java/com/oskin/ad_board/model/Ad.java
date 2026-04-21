@@ -1,39 +1,70 @@
 package com.oskin.ad_board.model;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "ads")
 public class Ad implements IIdentified {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "title")
     private String title;
+    @Column(name = "price")
     private int price;
+    @Column(name = "description")
     private String description;
-    private int sellerId;
-    private int cityId;
-    private LocalDateTime createdDateTime;
+    @Column(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User seller;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id")
+    private City city;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private StatusAd status;
-    private boolean IsPaid;
+    @Column(name = "is_paid")
+    private boolean isPaid;
+    @CreationTimestamp
+    @Column(name = "created_date_time", updatable = false)
+    private LocalDateTime createdDateTime;
 
-    public Ad(int id, String title, String description, int price, int sellerId, int cityId, LocalDateTime createdDateTime, StatusAd status, boolean isPaid) {
+    public Ad(int id,
+              String title,
+              String description,
+              int price,
+              User seller,
+              City city,
+              StatusAd status,
+              boolean isPaid) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.price = price;
-        this.sellerId = sellerId;
-        this.cityId = cityId;
-        this.createdDateTime = createdDateTime;
+        this.seller = seller;
+        this.city = city;
         this.status = status;
-        IsPaid = isPaid;
+        this.isPaid = isPaid;
     }
 
-    public Ad(String title, int price, String description, int sellerId, int cityId, LocalDateTime createdDateTime, StatusAd status, boolean isPaid) {
+    public Ad(String title,
+              int price,
+              String description,
+              User seller,
+              City city,
+              StatusAd status,
+              boolean isPaid) {
         this.title = title;
         this.price = price;
         this.description = description;
-        this.sellerId = sellerId;
-        this.cityId = cityId;
-        this.createdDateTime = createdDateTime;
+        this.seller = seller;
+        this.city = city;
         this.status = status;
-        IsPaid = isPaid;
+        this.isPaid = isPaid;
     }
 
     public Ad() {
@@ -72,28 +103,24 @@ public class Ad implements IIdentified {
         this.description = description;
     }
 
-    public int getSellerId() {
-        return sellerId;
+    public User getSeller() {
+        return seller;
     }
 
-    public void setSellerId(int sellerId) {
-        this.sellerId = sellerId;
+    public void setSeller(User seller) {
+        this.seller = seller;
     }
 
-    public int getCityId() {
-        return cityId;
+    public City getCity() {
+        return city;
     }
 
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
+    public void setCity(City city) {
+        this.city = city;
     }
 
     public LocalDateTime getCreatedDateTime() {
         return createdDateTime;
-    }
-
-    public void setCreatedDateTime(LocalDateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
     }
 
     public StatusAd getStatus() {
@@ -105,10 +132,10 @@ public class Ad implements IIdentified {
     }
 
     public boolean isPaid() {
-        return IsPaid;
+        return isPaid;
     }
 
     public void setPaid(boolean paid) {
-        IsPaid = paid;
+        isPaid = paid;
     }
 }

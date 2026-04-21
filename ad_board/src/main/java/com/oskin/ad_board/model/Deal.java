@@ -1,12 +1,27 @@
 package com.oskin.ad_board.model;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
-public class Deal implements IIdentified{
+@Entity
+@Table(name = "deals")
+public class Deal implements IIdentified {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int adId;
-    private int buyerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ad_id")
+    private Ad ad;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private StatusDeal status;
+    @CreationTimestamp
+    @Column(name = "created_date_time", updatable = false)
     private LocalDateTime createdDateTime;
 
     @Override
@@ -18,28 +33,8 @@ public class Deal implements IIdentified{
         this.id = id;
     }
 
-    public int getAdId() {
-        return adId;
-    }
-
-    public void setAdId(int adId) {
-        this.adId = adId;
-    }
-
-    public int getBuyerId() {
-        return buyerId;
-    }
-
-    public void setBuyerId(int buyerId) {
-        this.buyerId = buyerId;
-    }
-
     public LocalDateTime getCreatedDateTime() {
         return createdDateTime;
-    }
-
-    public void setCreatedDateTime(LocalDateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
     }
 
     public StatusDeal getStatus() {
@@ -53,18 +48,32 @@ public class Deal implements IIdentified{
     public Deal() {
     }
 
-    public Deal(int adId, int buyerId, StatusDeal status, LocalDateTime createdDateTime) {
-        this.adId = adId;
-        this.buyerId = buyerId;
-        this.status = status;
-        this.createdDateTime = createdDateTime;
+    public Ad getAd() {
+        return ad;
     }
 
-    public Deal(int id, int adId, int buyerId, StatusDeal status, LocalDateTime createdDateTime) {
-        this.id = id;
-        this.adId = adId;
-        this.buyerId = buyerId;
+    public void setAd(Ad ad) {
+        this.ad = ad;
+    }
+
+    public User getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(User buyer) {
+        this.buyer = buyer;
+    }
+
+    public Deal(Ad ad, User buyer, StatusDeal status) {
+        this.ad = ad;
+        this.buyer = buyer;
         this.status = status;
-        this.createdDateTime = createdDateTime;
+    }
+
+    public Deal(Ad ad, User buyer, StatusDeal status, int id) {
+        this.ad = ad;
+        this.buyer = buyer;
+        this.status = status;
+        this.id = id;
     }
 }

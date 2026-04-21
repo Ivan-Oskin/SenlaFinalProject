@@ -1,13 +1,28 @@
 package com.oskin.ad_board.model;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "reviews")
 public class Review implements IIdentified {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int authorId;
-    private int adId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ad_id")
+    private Ad ad;
+    @Column(name = "rating")
     private int rating;
+    @Column(name = "comment")
     private String comment;
+    @CreationTimestamp
+    @Column(name = "created_date_time", updatable = false)
     private LocalDateTime createdDateTime;
 
     @Override
@@ -19,13 +34,6 @@ public class Review implements IIdentified {
         this.id = id;
     }
 
-    public int getAdId() {
-        return adId;
-    }
-
-    public void setAdId(int adId) {
-        this.adId = adId;
-    }
 
     public int getRating() {
         return rating;
@@ -33,14 +41,6 @@ public class Review implements IIdentified {
 
     public void setRating(int rating) {
         this.rating = rating;
-    }
-
-    public int getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(int authorId) {
-        this.authorId = authorId;
     }
 
     public String getComment() {
@@ -62,20 +62,34 @@ public class Review implements IIdentified {
     public Review() {
     }
 
-    public Review(int authorId, int adId, int rating, String comment, LocalDateTime createdDateTime) {
-        this.authorId = authorId;
-        this.adId = adId;
-        this.rating = rating;
-        this.comment = comment;
-        this.createdDateTime = createdDateTime;
+    public User getAuthor() {
+        return author;
     }
 
-    public Review(int id, int authorId, int adId, int rating, String comment, LocalDateTime createdDateTime) {
-        this.id = id;
-        this.authorId = authorId;
-        this.adId = adId;
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public Ad getAd() {
+        return ad;
+    }
+
+    public void setAd(Ad ad) {
+        this.ad = ad;
+    }
+
+    public Review(User author, Ad ad, int rating, String comment) {
+        this.author = author;
+        this.ad = ad;
         this.rating = rating;
         this.comment = comment;
-        this.createdDateTime = createdDateTime;
+    }
+
+    public Review(int id, User author, Ad ad, int rating, String comment) {
+        this.id = id;
+        this.author = author;
+        this.ad = ad;
+        this.rating = rating;
+        this.comment = comment;
     }
 }

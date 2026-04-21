@@ -7,6 +7,5 @@ age integer not null,
 city_id integer not null,
 rating decimal(2,1) default 0,
 rating_count integer default 0,
-rating_sum integer default 0,
 created_date_time timestamp
 )

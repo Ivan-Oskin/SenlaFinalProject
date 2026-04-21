@@ -1,12 +1,26 @@
 package com.oskin.ad_board.model;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "messages")
 public class Message implements IIdentified {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int dialogId;
-    private int userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dialog_id")
+    private Dialog dialog;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+    @Column(name = "message")
     private String message;
+    @CreationTimestamp
+    @Column(name = "send_date_time", updatable = false)
     private LocalDateTime sendDateTime;
 
     @Override
@@ -18,21 +32,6 @@ public class Message implements IIdentified {
         this.id = id;
     }
 
-    public int getDialogId() {
-        return dialogId;
-    }
-
-    public void setDialogId(int dialogId) {
-        this.dialogId = dialogId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
     public String getMessage() {
         return message;
@@ -46,25 +45,35 @@ public class Message implements IIdentified {
         return sendDateTime;
     }
 
-    public void setSendDateTime(LocalDateTime sendDateTime) {
-        this.sendDateTime = sendDateTime;
-    }
-
     public Message() {
     }
 
-    public Message(int dialogId, int userId, String message, LocalDateTime sendDateTime) {
-        this.dialogId = dialogId;
-        this.userId = userId;
-        this.message = message;
-        this.sendDateTime = sendDateTime;
+    public Dialog getDialog() {
+        return dialog;
     }
 
-    public Message(int id, int dialogId, int userId, String message, LocalDateTime sendDateTime) {
-        this.id = id;
-        this.dialogId = dialogId;
-        this.userId = userId;
+    public void setDialog(Dialog dialog) {
+        this.dialog = dialog;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Message(Dialog dialog, User user, String message) {
+        this.dialog = dialog;
+        this.user = user;
         this.message = message;
-        this.sendDateTime = sendDateTime;
+    }
+
+    public Message(int id, Dialog dialog, User user, String message) {
+        this.id = id;
+        this.dialog = dialog;
+        this.user = user;
+        this.message = message;
     }
 }

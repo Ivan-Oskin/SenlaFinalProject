@@ -1,45 +1,73 @@
 package com.oskin.ad_board.model;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "profiles")
 public class Profile implements IIdentified {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int userId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    @Column(name = "name")
     private String name;
+    @Column(name = "surname")
     private String surname;
+    @Column(name = "age")
     private int age;
-    private int cityId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id")
+    private City city;
+    @Column(name = "rating")
     private double rating;
+    @Column(name = "rating_count")
     private int ratingCount;
-    private double ratingSum;
+    @CreationTimestamp
+    @Column(name = "created_date_time", updatable = false)
     private LocalDateTime createdDateTime;
 
-    public Profile(int id, int userId, String surname, String name, int age, int cityId, double rating, int ratingCount, double ratingSum, LocalDateTime createdDateTime) {
+    public Profile(int id,
+                   User user,
+                   String surname,
+                   String name,
+                   int age,
+                   City city,
+                   double rating,
+                   int ratingCount,
+                   double ratingSum) {
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.surname = surname;
         this.name = name;
         this.age = age;
-        this.cityId = cityId;
+        this.city = city;
         this.rating = rating;
         this.ratingCount = ratingCount;
-        this.ratingSum = ratingSum;
-        this.createdDateTime = createdDateTime;
     }
 
     public Profile() {
     }
 
-    public Profile(int userId, String name, String surname, int age, double rating, int cityId, int ratingCount, double ratingSum, LocalDateTime createdDateTime) {
-        this.userId = userId;
+    public Profile(User user,
+                   String name,
+                   String surname,
+                   int age,
+                   double rating,
+                   City city,
+                   int ratingCount,
+                   double ratingSum) {
+        this.user = user;
         this.name = name;
         this.surname = surname;
         this.age = age;
         this.rating = rating;
-        this.cityId = cityId;
+        this.city = city;
         this.ratingCount = ratingCount;
-        this.ratingSum = ratingSum;
-        this.createdDateTime = createdDateTime;
     }
 
     @Override
@@ -51,12 +79,12 @@ public class Profile implements IIdentified {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getName() {
@@ -83,12 +111,12 @@ public class Profile implements IIdentified {
         this.age = age;
     }
 
-    public int getCityId() {
-        return cityId;
+    public City getCity() {
+        return city;
     }
 
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
+    public void setCity(City city) {
+        this.city = city;
     }
 
     public double getRating() {
@@ -105,14 +133,6 @@ public class Profile implements IIdentified {
 
     public void setRatingCount(int ratingCount) {
         this.ratingCount = ratingCount;
-    }
-
-    public double getRatingSum() {
-        return ratingSum;
-    }
-
-    public void setRatingSum(double ratingSum) {
-        this.ratingSum = ratingSum;
     }
 
     public LocalDateTime getCreatedDateTime() {

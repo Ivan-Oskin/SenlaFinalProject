@@ -1,7 +1,16 @@
 package com.oskin.ad_board.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "cities")
 public class City implements IIdentified {
+    @Id
     private int id;
+    @Column(name = "name")
     private String name;
 
     @Override

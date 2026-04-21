@@ -1,22 +1,32 @@
 package com.oskin.ad_board.model;
 
-public class User implements IIdentified {
-    private int id;
-    private String mail;
-    private String password;
-    private int roleId;
+import jakarta.persistence.*;
 
-    public User(String mail, String password, int roleId) {
+@Entity
+@Table(name = "users")
+public class User implements IIdentified {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Column(name = "mail")
+    private String mail;
+    @Column(name = "password")
+    private String password;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    public User(String mail, String password, Role role) {
         this.mail = mail;
         this.password = password;
-        this.roleId = roleId;
+        this.role = role;
     }
 
-    public User(int id, String mail, String password, int roleId) {
+    public User(int id, String mail, String password, Role role) {
         this.id = id;
         this.mail = mail;
         this.password = password;
-        this.roleId = roleId;
+        this.role = role;
     }
 
     public User() {
@@ -47,11 +57,11 @@ public class User implements IIdentified {
         this.password = password;
     }
 
-    public int getRoleId() {
-        return roleId;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
