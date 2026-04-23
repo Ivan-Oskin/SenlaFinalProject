@@ -17,7 +17,6 @@ public class Ad implements IIdentified {
     private int price;
     @Column(name = "description")
     private String description;
-    @Column(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User seller;
