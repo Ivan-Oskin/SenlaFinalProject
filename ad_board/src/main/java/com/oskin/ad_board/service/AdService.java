@@ -1,5 +1,6 @@
 package com.oskin.ad_board.service;
 
+import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.model.Ad;
 import com.oskin.ad_board.repository.AdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,17 @@ public class AdService {
         return adRepository.delete(id);
     }
 
-    public Ad findById(int id) {
+    public AdResponse findById(int id) {
         Optional<Ad> optional = adRepository.findById(id);
-        return optional.orElse(null);
+        Ad ad = optional.orElseThrow();
+        AdResponse adResponse = new AdResponse();
+        adResponse.setId(ad.getId());
+        adResponse.setDescription(ad.getDescription());
+        adResponse.setTitle(ad.getTitle());
+        adResponse.setCity(ad.getCity().getName());
+        adResponse.setSeller_id(ad.getSeller().getId());
+        adResponse.setStatusAd(ad.getStatus());
+        adResponse.setCreatedDateTime(ad.getCreatedDateTime());
+        return adResponse;
     }
 }
