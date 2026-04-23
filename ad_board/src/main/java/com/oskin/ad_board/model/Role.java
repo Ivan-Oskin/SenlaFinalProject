@@ -10,13 +10,13 @@ public class Role implements IIdentified {
     private int id;
     @Column(name = "name")
     @Enumerated(EnumType.STRING)
-    private RoleName role;
+    private RoleName roleName;
 
     public Role() {
     }
 
-    public RoleName getName() {
-        return role;
+    public RoleName getRoleName() {
+        return roleName;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class Role implements IIdentified {
 
     @JsonIgnore
     public void setStandardUser() {
-        this.role = RoleName.USER;
+        this.roleName = RoleName.USER;
         this.id = 2;
     }
 }

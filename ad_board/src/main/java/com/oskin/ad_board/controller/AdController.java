@@ -1,11 +1,9 @@
-package com.oskin.ad_board.Controller;
+package com.oskin.ad_board.controller;
 
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/ad")
@@ -21,4 +19,6 @@ public class AdController {
     {
         return adService.findById(id);
     }
+
+
 }
