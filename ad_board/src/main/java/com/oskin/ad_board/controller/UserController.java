@@ -19,6 +19,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailService userDetailService;
     private final JwtUtils jwtUtils;
+
     @Autowired
     public UserController(UserService userService, AuthenticationManager authenticationManager, UserDetailService userDetailService, JwtUtils jwtUtils) {
         this.userService = userService;

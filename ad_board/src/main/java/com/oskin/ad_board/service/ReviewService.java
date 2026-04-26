@@ -23,7 +23,7 @@ public class ReviewService {
     private final MapperDto mapperDto;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, AdRepository adRepository, MapperDto mapperDto){
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, AdRepository adRepository, MapperDto mapperDto) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.adRepository = adRepository;
@@ -35,8 +35,8 @@ public class ReviewService {
         BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<User> userOptional = userRepository.findById(idAuthor);
         Optional<Ad> adOptional = adRepository.findById(reviewRequest.getAdId());
-        if(userOptional.isPresent() && adOptional.isPresent()) {
-            Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(),  userOptional.get());
+        if (userOptional.isPresent() && adOptional.isPresent()) {
+            Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(), userOptional.get());
             booleanResponse.setBool(reviewRepository.create(review));
         }
         return booleanResponse;
@@ -46,9 +46,9 @@ public class ReviewService {
     public BooleanResponse delete(int reviewId, int authorId) {
         BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
-        if(reviewOptional.isPresent()) {
+        if (reviewOptional.isPresent()) {
             Review review = reviewOptional.get();
-            if(review.getAuthor().getId() == authorId) {
+            if (review.getAuthor().getId() == authorId) {
                 booleanResponse.setBool(reviewRepository.delete(review));
             }
         }

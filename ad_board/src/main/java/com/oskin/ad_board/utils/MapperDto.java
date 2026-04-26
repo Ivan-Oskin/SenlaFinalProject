@@ -66,4 +66,12 @@ public class MapperDto {
         review.setComment(reviewRequest.getComment());
         return review;
     }
+
+    public Deal dealRequestToEntity(Ad ad, User user) {
+        Deal deal = new Deal();
+        deal.setAd(ad);
+        deal.setBuyer(user);
+        deal.setStatus(StatusDeal.CREATED);
+        return deal;
+    }
 }

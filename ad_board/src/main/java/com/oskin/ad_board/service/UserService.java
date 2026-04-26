@@ -1,6 +1,7 @@
 package com.oskin.ad_board.service;
 
 import com.oskin.ad_board.dto.request.UserRequest;
+import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.model.Role;
 import com.oskin.ad_board.model.User;
 import com.oskin.ad_board.repository.UserRepository;
@@ -20,12 +21,14 @@ public class UserService {
     }
 
     @Transactional
-    public boolean save(UserRequest userRequest) {
+    public BooleanResponse save(UserRequest userRequest) {
+        BooleanResponse booleanResponse = new BooleanResponse(false);
         String mail = userRequest.getMail();
         String password = passwordEncoder.encode(userRequest.getPassword());
         Role role = new Role();
         role.setStandardUser();
         User user = new User(mail, password, role);
-        return userRepository.create(user);
+        booleanResponse.setBool(userRepository.create(user));
+        return booleanResponse;
     }
 }
