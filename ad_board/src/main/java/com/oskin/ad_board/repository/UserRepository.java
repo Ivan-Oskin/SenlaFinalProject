@@ -27,11 +27,6 @@ public class UserRepository extends AbstractCrudRepository<User> {
         log.info("Start findByMail");
         TypedQuery<User> query = entityManager.createQuery("FROM User WHERE mail = :mail", User.class);
         query.setParameter("mail", mail);
-        List<User> users = query.getResultList();
-        if (!users.isEmpty()) {
-            return Optional.of(users.get(0));
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(query.getSingleResult());
     }
 }

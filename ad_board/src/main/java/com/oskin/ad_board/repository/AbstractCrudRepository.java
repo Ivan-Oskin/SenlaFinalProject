@@ -50,19 +50,6 @@ public abstract class AbstractCrudRepository<T extends IIdentified> implements C
     }
 
     @Override
-    public List<T> findAll() {
-        try {
-            log.info("start findAll");
-            TypedQuery<T> query = entityManager.createQuery("FROM " + entityClass.getSimpleName(), entityClass);
-            log.info("successful findAll");
-            return query.getResultList();
-        } catch (Exception e) {
-            log.error("error findAll, exception => {}", e.getMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
     public boolean delete(int id) {
         try {
             Optional<T> optional = findById(id);
@@ -76,7 +63,19 @@ public abstract class AbstractCrudRepository<T extends IIdentified> implements C
                 return false;
             }
         } catch (Exception e) {
-            log.error("error delete, exception => {}", e.getMessage());
+            log.error("error delete byId, exception => {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean delete(T object) {
+        try {
+            log.info("start delete object");
+            entityManager.remove(object);
+            log.info("successful delete object");
+                return true;
+        } catch (Exception e) {
+            log.error("error delete object, exception => {}", e.getMessage());
             return false;
         }
     }
