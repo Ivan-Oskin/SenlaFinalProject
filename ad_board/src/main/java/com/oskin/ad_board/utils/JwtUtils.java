@@ -70,4 +70,10 @@ public class JwtUtils {
         }
         return null;
     }
+
+    public int getCurrentId() {
+        String token = getTokenFromRequest();
+        String idString = getId(token);
+        return Integer.parseInt(idString);
+    }
 }

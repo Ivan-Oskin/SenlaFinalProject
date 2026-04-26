@@ -12,7 +12,7 @@ public class AdResponse {
     String description;
     int seller_id;
     String city;
-    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdDateTime;
     StatusAd statusAd;
 

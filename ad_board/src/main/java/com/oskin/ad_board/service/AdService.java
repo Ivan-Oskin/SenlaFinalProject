@@ -41,7 +41,7 @@ public class AdService {
         if(userOptional.isPresent() && cityOptional.isPresent()) {
             User user = userOptional.get();
             City city = cityOptional.get();
-            ad = mapperDto.AdToEntity(adRequest, user, city);
+            ad = mapperDto.adToEntity(adRequest, user, city);
             booleanResponse.setBool(adRepository.create(ad));
         }
         return booleanResponse;
@@ -81,6 +81,6 @@ public class AdService {
     public AdResponse findById(int id) {
         Optional<Ad> optional = adRepository.findById(id);
         Ad ad = optional.orElseThrow();
-        return mapperDto.AdToResponse(ad);
+        return mapperDto.adToResponse(ad);
     }
 }

@@ -27,25 +27,19 @@ public class AdController {
 
     @PostMapping
     public BooleanResponse addNewAdd(@RequestBody AdRequest adRequest) {
-        String token = jwtUtils.getTokenFromRequest();
-        String idString = jwtUtils.getId(token);
-        int id = Integer.parseInt(idString);
-        return adService.save(adRequest, id);
+        int idSeller = jwtUtils.getCurrentId();
+        return adService.save(adRequest, idSeller);
     }
 
     @PutMapping("/{id}")
     public BooleanResponse update(@PathVariable("id") int idAd, @RequestBody AdRequest adRequest) {
-        String token = jwtUtils.getTokenFromRequest();
-        String idString = jwtUtils.getId(token);
-        int idSeller = Integer.parseInt(idString);
+        int idSeller = jwtUtils.getCurrentId();
         return adService.update(adRequest, idAd, idSeller);
     }
 
     @DeleteMapping("/{id}")
     public BooleanResponse delete(@PathVariable("id") int idAd) {
-        String token = jwtUtils.getTokenFromRequest();
-        String idString = jwtUtils.getId(token);
-        int idSeller = Integer.parseInt(idString);
+        int idSeller = jwtUtils.getCurrentId();
         return adService.delete(idAd, idSeller);
     }
 }

@@ -23,8 +23,16 @@ public class CityRepository extends AbstractCrudRepository<City>{
     }
 
     public Optional<City> findByName(String name) {
-        TypedQuery<City> query = entityManager.createQuery("FROM City WHERE name = :name", City.class);
-        query.setParameter("name", name);
-        return Optional.ofNullable(query.getSingleResult());
+        try {
+            log.info("start findByName: {}", name);
+            TypedQuery<City> query = entityManager.createQuery("FROM City WHERE name = :name", City.class);
+            query.setParameter("name", name);
+            City city = query.getSingleResult();
+            log.info("successful findByName: {}", name);
+            return Optional.of(city);
+        } catch (Exception e) {
+            log.info("error findByName: {}, exception => {}", name, e.getMessage());
+            return Optional.empty();
+        }
     }
 }
