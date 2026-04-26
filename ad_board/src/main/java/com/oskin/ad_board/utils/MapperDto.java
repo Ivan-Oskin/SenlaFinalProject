@@ -5,7 +5,6 @@ import com.oskin.ad_board.dto.request.ProfileRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.ProfileResponse;
 import com.oskin.ad_board.model.*;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -50,7 +49,7 @@ public class MapperDto {
         profileResponse.setName(profile.getName());
         profileResponse.setSurname(profile.getSurname());
         profileResponse.setAge(profile.getAge());
-        profileResponse.setCityId(profile.getCity().getId());
+        profileResponse.setCity(profile.getCity().getName().toLowerCase());
         profileResponse.setUser_id(profile.getUser().getId());
         profileResponse.setRating(profile.getRating());
         profileResponse.setRating_count(profile.getRatingCount());

@@ -10,7 +10,7 @@ public class ProfileResponse {
     private String name;
     private String surname;
     private int age;
-    private int cityId;
+    private String city;
     private double rating;
     private int rating_count;
 
@@ -54,12 +54,12 @@ public class ProfileResponse {
         this.age = age;
     }
 
-    public int getCityId() {
-        return cityId;
+    public String getCity() {
+        return city;
     }
 
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public double getRating() {
