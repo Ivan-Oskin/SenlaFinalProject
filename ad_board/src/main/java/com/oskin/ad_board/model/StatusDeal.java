@@ -8,4 +8,5 @@ public enum StatusDeal {
     RECEIVED, // Получено покупателем
     COMPLETED, // завершено
     RETURNED, // возвращено
+    CANCEL // отменено
 }

@@ -1,5 +1,6 @@
 package com.oskin.ad_board.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,26 +9,14 @@ public class Role implements IIdentified {
     @Id
     private int id;
     @Column(name = "name")
-    private String name;
-
-    public Role(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Role(String name) {
-        this.name = name;
-    }
+    @Enumerated(EnumType.STRING)
+    private RoleName roleName;
 
     public Role() {
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public RoleName getRoleName() {
+        return roleName;
     }
 
     @Override
@@ -35,7 +24,9 @@ public class Role implements IIdentified {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    @JsonIgnore
+    public void setStandardUser() {
+        this.roleName = RoleName.USER;
+        this.id = 2;
     }
 }
