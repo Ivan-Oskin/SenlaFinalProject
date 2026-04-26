@@ -1,6 +1,7 @@
 package com.oskin.ad_board.controller;
 
 import com.oskin.ad_board.dto.request.UserRequest;
+import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.JwtResponse;
 import com.oskin.ad_board.security.UserDetailService;
 import com.oskin.ad_board.service.UserService;
@@ -29,8 +30,15 @@ public class UserController {
     }
 
     @PostMapping("/reg")
-    public boolean save(@RequestBody UserRequest userRequest) {
-        return userService.save(userRequest);
+    public JwtResponse save(@RequestBody UserRequest userRequest) {
+        BooleanResponse booleanResponse = userService.save(userRequest);
+        if(booleanResponse.isBool()) {
+            UserDetails userDetails = userDetailService.loadUserByUsername(userRequest.getMail());
+            String token = jwtUtils.generateToken(userDetails);
+            return new JwtResponse(token);
+        } else {
+            return null;
+        }
     }
 
     @PostMapping("/auth")
