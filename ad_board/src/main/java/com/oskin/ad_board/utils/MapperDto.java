@@ -2,6 +2,7 @@ package com.oskin.ad_board.utils;
 
 import com.oskin.ad_board.dto.request.AdRequest;
 import com.oskin.ad_board.dto.request.ProfileRequest;
+import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.ProfileResponse;
 import com.oskin.ad_board.model.*;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MapperDto {
-    public Ad adToEntity(AdRequest adRequest, User user, City city) {
+    public Ad adRequestToEntity(AdRequest adRequest, User user, City city) {
         Ad ad = new Ad();
         ad.setCity(city);
         ad.setSeller(user);
@@ -33,7 +34,7 @@ public class MapperDto {
         return adResponse;
     }
 
-    public Profile profileToEntity(ProfileRequest profileRequest, User user, City city) {
+    public Profile profileRequestToEntity(ProfileRequest profileRequest, User user, City city) {
         Profile profile = new Profile();
         profile.setCity(city);
         profile.setUser(user);
@@ -55,5 +56,14 @@ public class MapperDto {
         profileResponse.setRating_count(profile.getRatingCount());
         profileResponse.setCreated_date_time(profile.getCreatedDateTime());
         return profileResponse;
+    }
+
+    public Review reviewRequestToEntity(ReviewRequest reviewRequest, Ad ad, User author) {
+        Review review = new Review();
+        review.setAd(ad);
+        review.setAuthor(author);
+        review.setRating(reviewRequest.getRating());
+        review.setComment(reviewRequest.getComment());
+        return review;
     }
 }

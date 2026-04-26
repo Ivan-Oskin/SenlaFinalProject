@@ -39,7 +39,7 @@ public class ProfileService {
         if (userOptional.isPresent() && cityOptional.isPresent()) {
             User user = userOptional.get();
             City city = cityOptional.get();
-            Profile profile = mapperDto.profileToEntity(profileRequest, user, city);
+            Profile profile = mapperDto.profileRequestToEntity(profileRequest, user, city);
             booleanResponse.setBool(profileRepository.create(profile));
         }
         return booleanResponse;

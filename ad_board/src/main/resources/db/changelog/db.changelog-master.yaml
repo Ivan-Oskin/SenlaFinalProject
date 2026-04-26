@@ -31,3 +31,5 @@ databaseChangeLog:
       file: db/changelog/v1.1/update_all_timestamp.sql
   - include:
       file: db/changelog/v1.1/lower_case_to_cities.sql
+  - include:
+      file: db/changelog/v1.1/update_review_rename_column.sql

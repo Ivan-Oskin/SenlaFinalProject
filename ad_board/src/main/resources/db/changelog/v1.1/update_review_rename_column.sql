@@ -1,0 +1,1 @@
+alter table reviews rename column ads_id to ad_id
