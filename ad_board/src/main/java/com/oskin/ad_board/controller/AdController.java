@@ -8,6 +8,8 @@ import com.oskin.ad_board.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/ad")
 public class AdController {
@@ -25,10 +27,47 @@ public class AdController {
         return adService.findById(id);
     }
 
+    @GetMapping("/default/{title}")
+    public List<AdResponse> findByTitleSortedByRating(@PathVariable("title") String title) {
+        return adService.findByTitle(title);
+    }
+
+    @GetMapping("/created_date_time/{title}")
+    public List<AdResponse> findByTitleSortedByCreatedDateTime(@PathVariable("title") String title) {
+        return adService.findByTitleSortedByCreatedDateTime(title);
+    }
+
+    @GetMapping("/costly/{title}")
+    public List<AdResponse> findByTitleSortedByCostly(@PathVariable("title") String title) {
+        return adService.findByTitleSortedByCostly(title);
+    }
+
+    @GetMapping("/less_costly/{title}")
+    public List<AdResponse> findByTitleSortedByLessCostly(@PathVariable("title") String title) {
+        return adService.findByTitleSortedByLessCostly(title);
+    }
+
+    @GetMapping("/seller/{id}")
+    public List<AdResponse> findBySeller(@PathVariable("id") int id) {
+        return adService.findBySeller(id);
+    }
+
     @PostMapping
     public BooleanResponse addNewAdd(@RequestBody AdRequest adRequest) {
         int idSeller = jwtUtils.getCurrentId();
         return adService.save(adRequest, idSeller);
+    }
+
+    @PutMapping("/publish/{id}")
+    public BooleanResponse publishAdd(@PathVariable("id") int adId) {
+        int sellerId = jwtUtils.getCurrentId();
+        return adService.publishBySeller(adId, sellerId);
+    }
+
+    @PutMapping("/archive/{id}")
+    public BooleanResponse archiveAdd(@PathVariable("id") int adId) {
+        int sellerId = jwtUtils.getCurrentId();
+        return adService.archiveBySeller(adId, sellerId);
     }
 
     @PutMapping("/{id}")

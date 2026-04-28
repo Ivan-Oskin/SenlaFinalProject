@@ -16,7 +16,6 @@ public class MapperDto {
         ad.setSeller(user);
         ad.setDescription(adRequest.getDescription());
         ad.setPrice(adRequest.getPrice());
-        ad.setStatus(StatusAd.MODERATION);
         ad.setTitle(adRequest.getTitle());
         ad.setPaid(false);
         return ad;
@@ -31,6 +30,7 @@ public class MapperDto {
         adResponse.setSeller_id(ad.getSeller().getId());
         adResponse.setStatusAd(ad.getStatus());
         adResponse.setCreatedDateTime(ad.getCreatedDateTime());
+        adResponse.setPrice(ad.getPrice());
         return adResponse;
     }
 
