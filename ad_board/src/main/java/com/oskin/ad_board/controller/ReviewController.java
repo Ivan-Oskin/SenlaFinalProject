@@ -1,5 +1,6 @@
 package com.oskin.ad_board.controller;
 
+import com.oskin.ad_board.dto.request.GetReviewRequest;
 import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.ReviewResponse;
@@ -34,18 +35,8 @@ public class ReviewController {
         return reviewService.delete(commentId, authorId);
     }
 
-    @GetMapping("rating_desc/{ad_id}")
-    public List<ReviewResponse> getReviewsAdByRatingDESC(@PathVariable("ad_id") int adId) {
-        return reviewService.getReviewByAdSortByRatingDESC(adId);
-    }
-
-    @GetMapping("rating_asc/{ad_id}")
-    public List<ReviewResponse> getReviewsAdByRatingASC(@PathVariable("ad_id") int adId) {
-        return reviewService.getReviewByAdSortByRatingASC(adId);
-    }
-
-    @GetMapping("time/{ad_id}")
-    public List<ReviewResponse> getReviewsAdByTime(@PathVariable("ad_id") int adId) {
-        return reviewService.getReviewByAdSortByTime(adId);
+    @GetMapping("{ad_id}")
+    public List<ReviewResponse> getReviewsAd(@PathVariable("ad_id") int adId, @RequestBody GetReviewRequest getReviewRequest) {
+        return reviewService.getReviewByAd(adId, getReviewRequest);
     }
 }
