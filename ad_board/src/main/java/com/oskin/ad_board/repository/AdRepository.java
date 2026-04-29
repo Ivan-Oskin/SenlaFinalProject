@@ -29,6 +29,8 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
     private String buildSearch(boolean isPaid, AdSortType adSortType) {
         String hql = "SELECT a FROM Ad a " +
                 "JOIN Profile p on p.user = a.seller " +
+                "JOIN FETCH a.city c " +
+                "JOIN FETCH a.seller s " +
                 "WHERE (LOWER(a.title) LIKE LOWER(:search) " +
                 "OR LOWER(a.description) LIKE LOWER(:search)) " +
                 "AND (a.status = :active or a.status = :reserved) " +
@@ -71,7 +73,10 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
         List<Ad> list = new ArrayList<>();
         try {
             log.info("start findBySeller");
-            TypedQuery<Ad> query = entityManager.createQuery("FROM Ad WHERE seller.id = :id", Ad.class);
+            TypedQuery<Ad> query = entityManager.createQuery("FROM Ad a " +
+                    "JOIN FETCH a.city c " +
+                    "JOIN FETCH a.seller s " +
+                    "WHERE a.seller.id = :id", Ad.class);
             query.setParameter("id", sellerId);
             list = query.getResultList();
             log.info("successful findBySeller");
@@ -86,7 +91,11 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
         List<Ad> list = new ArrayList<>();
         try {
             log.info("start findAllToModeration");
-            TypedQuery<Ad> query = entityManager.createQuery("FROM Ad WHERE status = :status", Ad.class);
+            TypedQuery<Ad> query = entityManager.createQuery(
+                    "FROM Ad a " +
+                            "JOIN FETCH a.city c " +
+                            "JOIN FETCH a.seller s " +
+                            "WHERE a.status = :status", Ad.class);
             query.setParameter("status", StatusAd.MODERATION);
             list = query.getResultList();
             log.info("successful findAllToModeration");

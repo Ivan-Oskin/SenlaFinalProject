@@ -4,6 +4,7 @@ import com.oskin.ad_board.dto.request.AdRequest;
 import com.oskin.ad_board.dto.request.ProfileRequest;
 import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
+import com.oskin.ad_board.dto.response.DealResponse;
 import com.oskin.ad_board.dto.response.ProfileResponse;
 import com.oskin.ad_board.model.*;
 import org.springframework.stereotype.Component;
@@ -73,5 +74,15 @@ public class MapperDto {
         deal.setBuyer(user);
         deal.setStatus(StatusDeal.CREATED);
         return deal;
+    }
+
+    public DealResponse dealToResponse(Deal deal) {
+        DealResponse dealResponse = new DealResponse();
+        dealResponse.setAdId(deal.getAd().getId());
+        dealResponse.setAdTitle(deal.getAd().getTitle());
+        dealResponse.setBuyerId(deal.getBuyer().getId());
+        dealResponse.setCreatedDateTime(deal.getCreatedDateTime());
+        dealResponse.setId(deal.getId());
+        return dealResponse;
     }
 }

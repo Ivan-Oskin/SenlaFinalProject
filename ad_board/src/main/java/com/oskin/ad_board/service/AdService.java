@@ -66,7 +66,7 @@ public class AdService {
         BooleanResponse booleanResponse = new BooleanResponse(false);
         if (adOptional.isPresent() && cityOptional.isPresent()) {
             Ad ad = adOptional.get();
-            if (ad.getSeller().getId() == idSeller && ad.getStatus() != StatusAd.SOLD && ad.getStatus() != StatusAd.RESERVED) {
+            if (ad.getSeller().getId() == idSeller && ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
                 ad.setTitle(adRequest.getTitle());
                 ad.setPrice(adRequest.getPrice());
                 ad.setCity(cityOptional.get());
