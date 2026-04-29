@@ -1,6 +1,7 @@
 package com.oskin.ad_board.controller;
 
 import com.oskin.ad_board.dto.request.AdRequest;
+import com.oskin.ad_board.dto.request.GetAdRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.service.AdService;
@@ -22,34 +23,14 @@ public class AdController {
         this.jwtUtils = jwtUtils;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public AdResponse findById(@PathVariable("id") int id) {
         return adService.findById(id);
     }
 
-    @GetMapping("/default/{title}")
-    public List<AdResponse> findByTitleSortedByRating(@PathVariable("title") String title) {
-        return adService.findByTitle(title);
-    }
-
-    @GetMapping("/created_date_time/{title}")
-    public List<AdResponse> findByTitleSortedByCreatedDateTime(@PathVariable("title") String title) {
-        return adService.findByTitleSortedByCreatedDateTime(title);
-    }
-
-    @GetMapping("/price_desc/{title}")
-    public List<AdResponse> findByTitleSortedByPriceDESC(@PathVariable("title") String title) {
-        return adService.findByTitleSortedByPriceDESC(title);
-    }
-
-    @GetMapping("/price_asc/{title}")
-    public List<AdResponse> findByTitleSortedByPriceASC(@PathVariable("title") String title) {
-        return adService.findByTitleSortedByPriceASC(title);
-    }
-
-    @GetMapping("/seller/{id}")
-    public List<AdResponse> findBySeller(@PathVariable("id") int id) {
-        return adService.findBySeller(id);
+    @GetMapping
+    public List<AdResponse> findByTitle(@RequestBody GetAdRequest getAdRequest) {
+        return adService.findByTitle(getAdRequest);
     }
 
     @PostMapping

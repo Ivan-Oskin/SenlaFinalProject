@@ -1,7 +1,9 @@
 package com.oskin.ad_board.repository;
 
+import com.oskin.ad_board.dto.request.GetAdRequest;
 import com.oskin.ad_board.model.Ad;
 import com.oskin.ad_board.model.AdSortType;
+import com.oskin.ad_board.model.City;
 import com.oskin.ad_board.model.StatusAd;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,7 +28,10 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
         super(Ad.class);
     }
 
-    private String buildSearch(boolean isPaid, AdSortType adSortType) {
+    private String buildSearch(GetAdRequest getAdRequest) {
+        AdSortType adSortType = getAdRequest.getAdSortType();
+        boolean isPaid = getAdRequest.isPaid();
+        String city = getAdRequest.getCity();
         String hql = "SELECT a FROM Ad a " +
                 "JOIN Profile p on p.user = a.seller " +
                 "JOIN FETCH a.city c " +
@@ -38,26 +43,35 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
 
         if (adSortType == AdSortType.DEFAULT) {
             hql += "CASE WHEN LOWER(a.title) LIKE LOWER(:exact) THEN 1 " +
-                    "WHEN LOWER(a.title) LIKE LOWER(:search) THEN 2" +
+                    "WHEN LOWER(a.title) LIKE LOWER(:search) THEN 2 " +
                     "ELSE 3 END, ";
         }
 
+        if (city != null) {
+            hql += "CASE WHEN a.city.name LIKE LOWER(:city) THEN 1 " +
+                    "ELSE 2 END, ";
+        }
+
         if (isPaid) {
-            hql += "isPaid DESC, ";
+            log.info("isPaid check");
+            hql += "a.isPaid DESC, ";
         }
 
         hql += adSortType.getHqlString() + "rating DESC";
         return hql;
     }
 
-    public List<Ad> searchByTitle(String title, AdSortType adSortType, boolean isPaid) {
+    public List<Ad> searchByTitle(GetAdRequest getAdRequest) {
         List<Ad> list = new ArrayList<>();
-        String hql = buildSearch(isPaid, adSortType);
+        String hql = buildSearch(getAdRequest);
+        String title = getAdRequest.getTitle();
+        String city = getAdRequest.getCity();
         try {
             log.info("start findByTitle");
             TypedQuery<Ad> query = entityManager.createQuery(hql, Ad.class);
             query.setParameter("search", "%" + title + "%");
-            if (adSortType == AdSortType.DEFAULT) query.setParameter("exact", title);
+            if (getAdRequest.getAdSortType() == AdSortType.DEFAULT) query.setParameter("exact", title);
+            if(city != null) query.setParameter("city", city);
             query.setParameter("active", StatusAd.ACTIVE);
             query.setParameter("reserved", StatusAd.RESERVED);
             list = query.getResultList();

@@ -1,6 +1,7 @@
 package com.oskin.ad_board.service;
 
 import com.oskin.ad_board.dto.request.AdRequest;
+import com.oskin.ad_board.dto.request.GetAdRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.model.User;
@@ -99,23 +100,8 @@ public class AdService {
         return mapperDto.adToResponse(ad);
     }
 
-    public List<AdResponse> findByTitle(String title) {
-        List<Ad> list = adRepository.searchByTitle(title, AdSortType.DEFAULT, false);
-        return list.stream().map(mapperDto::adToResponse).toList();
-    }
-
-    public List<AdResponse> findByTitleSortedByCreatedDateTime(String title) {
-        List<Ad> list = adRepository.searchByTitle(title, AdSortType.CREATE_DATE_TIME, false);
-        return list.stream().map(mapperDto::adToResponse).toList();
-    }
-
-    public List<AdResponse> findByTitleSortedByPriceDESC(String title) {
-        List<Ad> list = adRepository.searchByTitle(title, AdSortType.PRICE_DESC, false);
-        return list.stream().map(mapperDto::adToResponse).toList();
-    }
-
-    public List<AdResponse> findByTitleSortedByPriceASC(String title) {
-        List<Ad> list = adRepository.searchByTitle(title, AdSortType.PRICE_ASC, false);
+    public List<AdResponse> findByTitle(GetAdRequest getAdRequest) {
+        List<Ad> list = adRepository.searchByTitle(getAdRequest);
         return list.stream().map(mapperDto::adToResponse).toList();
     }
 
