@@ -109,13 +109,13 @@ public class AdService {
         return list.stream().map(mapperDto::adToResponse).toList();
     }
 
-    public List<AdResponse> findByTitleSortedByCostly(String title) {
-        List<Ad> list = adRepository.searchByTitle(title, AdSortType.PRICE_MAX, false);
+    public List<AdResponse> findByTitleSortedByPriceDESC(String title) {
+        List<Ad> list = adRepository.searchByTitle(title, AdSortType.PRICE_DESC, false);
         return list.stream().map(mapperDto::adToResponse).toList();
     }
 
-    public List<AdResponse> findByTitleSortedByLessCostly(String title) {
-        List<Ad> list = adRepository.searchByTitle(title, AdSortType.PRICE_MIN, false);
+    public List<AdResponse> findByTitleSortedByPriceASC(String title) {
+        List<Ad> list = adRepository.searchByTitle(title, AdSortType.PRICE_ASC, false);
         return list.stream().map(mapperDto::adToResponse).toList();
     }
 

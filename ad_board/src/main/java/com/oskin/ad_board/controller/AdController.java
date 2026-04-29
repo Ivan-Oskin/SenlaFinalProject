@@ -37,14 +37,14 @@ public class AdController {
         return adService.findByTitleSortedByCreatedDateTime(title);
     }
 
-    @GetMapping("/costly/{title}")
-    public List<AdResponse> findByTitleSortedByCostly(@PathVariable("title") String title) {
-        return adService.findByTitleSortedByCostly(title);
+    @GetMapping("/price_desc/{title}")
+    public List<AdResponse> findByTitleSortedByPriceDESC(@PathVariable("title") String title) {
+        return adService.findByTitleSortedByPriceDESC(title);
     }
 
-    @GetMapping("/less_costly/{title}")
-    public List<AdResponse> findByTitleSortedByLessCostly(@PathVariable("title") String title) {
-        return adService.findByTitleSortedByLessCostly(title);
+    @GetMapping("/price_asc/{title}")
+    public List<AdResponse> findByTitleSortedByPriceASC(@PathVariable("title") String title) {
+        return adService.findByTitleSortedByPriceASC(title);
     }
 
     @GetMapping("/seller/{id}")

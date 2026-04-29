@@ -2,10 +2,13 @@ package com.oskin.ad_board.controller;
 
 import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
+import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.service.ReviewService;
 import com.oskin.ad_board.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/review")
@@ -19,15 +22,30 @@ public class ReviewController {
         this.jwtUtils = jwtUtils;
     }
 
-    @PostMapping
-    public BooleanResponse createReview(@RequestBody ReviewRequest reviewRequest) {
+    @PostMapping("/{ad_id}")
+    public BooleanResponse createReview(@PathVariable("ad_id") int adId, @RequestBody ReviewRequest reviewRequest) {
         int authorId = jwtUtils.getCurrentId();
-        return reviewService.save(reviewRequest, authorId);
+        return reviewService.save(reviewRequest, adId, authorId);
     }
 
     @DeleteMapping("/{id}")
     public BooleanResponse deleteReview(@PathVariable("id") int commentId) {
         int authorId = jwtUtils.getCurrentId();
         return reviewService.delete(commentId, authorId);
+    }
+
+    @GetMapping("rating_desc/{ad_id}")
+    public List<ReviewResponse> getReviewsAdByRatingDESC(@PathVariable("ad_id") int adId) {
+        return reviewService.getReviewByAdSortByRatingDESC(adId);
+    }
+
+    @GetMapping("rating_asc/{ad_id}")
+    public List<ReviewResponse> getReviewsAdByRatingASC(@PathVariable("ad_id") int adId) {
+        return reviewService.getReviewByAdSortByRatingASC(adId);
+    }
+
+    @GetMapping("time/{ad_id}")
+    public List<ReviewResponse> getReviewsAdByTime(@PathVariable("ad_id") int adId) {
+        return reviewService.getReviewByAdSortByTime(adId);
     }
 }

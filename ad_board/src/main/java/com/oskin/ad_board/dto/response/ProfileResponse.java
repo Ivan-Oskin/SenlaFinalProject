@@ -6,28 +6,17 @@ import java.time.LocalDateTime;
 
 public class ProfileResponse {
     private int id;
-    private int user_id;
+    private int userId;
     private String name;
     private String surname;
     private int age;
     private String city;
     private double rating;
-    private int rating_count;
+    private int ratingCount;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime createdDateTime;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public ProfileResponse() {
     }
 
     public String getName() {
@@ -36,6 +25,22 @@ public class ProfileResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSurname() {
@@ -70,25 +75,19 @@ public class ProfileResponse {
         this.rating = rating;
     }
 
-    public LocalDateTime getCreated_date_time() {
-        return created_date_time;
+    public int getRatingCount() {
+        return ratingCount;
     }
 
-    public void setCreated_date_time(LocalDateTime created_date_time) {
-        this.created_date_time = created_date_time;
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
-    public int getRating_count() {
-        return rating_count;
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
     }
 
-    public void setRating_count(int rating_count) {
-        this.rating_count = rating_count;
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
-
-    public ProfileResponse() {
-    }
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime created_date_time;
 }

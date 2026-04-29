@@ -6,7 +6,9 @@ import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.DealResponse;
 import com.oskin.ad_board.dto.response.ProfileResponse;
+import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.model.*;
+import jakarta.persistence.Tuple;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -52,10 +54,10 @@ public class MapperDto {
         profileResponse.setSurname(profile.getSurname());
         profileResponse.setAge(profile.getAge());
         profileResponse.setCity(profile.getCity().getName().toLowerCase());
-        profileResponse.setUser_id(profile.getUser().getId());
+        profileResponse.setUserId(profile.getUser().getId());
         profileResponse.setRating(profile.getRating());
-        profileResponse.setRating_count(profile.getRatingCount());
-        profileResponse.setCreated_date_time(profile.getCreatedDateTime());
+        profileResponse.setRatingCount(profile.getRatingCount());
+        profileResponse.setCreatedDateTime(profile.getCreatedDateTime());
         return profileResponse;
     }
 
@@ -84,5 +86,18 @@ public class MapperDto {
         dealResponse.setCreatedDateTime(deal.getCreatedDateTime());
         dealResponse.setId(deal.getId());
         return dealResponse;
+    }
+
+    public ReviewResponse tupleReviewToResponse(Tuple tuple) {
+        Review review = tuple.get("review", Review.class);
+        String authorName = tuple.get("authorName", String.class);
+        ReviewResponse reviewResponse = new ReviewResponse();
+        reviewResponse.setAuthorId(review.getAuthor().getId());
+        reviewResponse.setId(review.getId());
+        reviewResponse.setAuthorName(authorName);
+        reviewResponse.setComment(review.getComment());
+        reviewResponse.setCreatedDateTime(review.getCreatedDateTime());
+        reviewResponse.setRating(review.getRating());
+        return reviewResponse;
     }
 }

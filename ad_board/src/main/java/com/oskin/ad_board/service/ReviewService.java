@@ -2,17 +2,21 @@ package com.oskin.ad_board.service;
 
 import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
+import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.model.Ad;
 import com.oskin.ad_board.model.Review;
+import com.oskin.ad_board.model.ReviewSortType;
 import com.oskin.ad_board.model.User;
 import com.oskin.ad_board.repository.AdRepository;
 import com.oskin.ad_board.repository.ReviewRepository;
 import com.oskin.ad_board.repository.UserRepository;
 import com.oskin.ad_board.utils.MapperDto;
+import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,10 +35,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public BooleanResponse save(ReviewRequest reviewRequest, int idAuthor) {
+    public BooleanResponse save(ReviewRequest reviewRequest, int adId, int idAuthor) {
         BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<User> userOptional = userRepository.findById(idAuthor);
-        Optional<Ad> adOptional = adRepository.findById(reviewRequest.getAdId());
+        Optional<Ad> adOptional = adRepository.findById(adId);
         if (userOptional.isPresent() && adOptional.isPresent()) {
             Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(), userOptional.get());
             booleanResponse.setBool(reviewRepository.create(review));
@@ -53,5 +57,20 @@ public class ReviewService {
             }
         }
         return booleanResponse;
+    }
+
+    public List<ReviewResponse> getReviewByAdSortByRatingDESC(int adId) {
+        List<Tuple> list = reviewRepository.findByAd(adId, ReviewSortType.RATING_DESC);
+        return list.stream().map(mapperDto::tupleReviewToResponse).toList();
+    }
+
+    public List<ReviewResponse> getReviewByAdSortByRatingASC(int adId) {
+        List<Tuple> list = reviewRepository.findByAd(adId, ReviewSortType.RATING_ASC);
+        return list.stream().map(mapperDto::tupleReviewToResponse).toList();
+    }
+
+    public List<ReviewResponse> getReviewByAdSortByTime(int adId) {
+        List<Tuple> list = reviewRepository.findByAd(adId, ReviewSortType.CREATED_DATE_TIME);
+        return list.stream().map(mapperDto::tupleReviewToResponse).toList();
     }
 }

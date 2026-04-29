@@ -2,8 +2,8 @@ package com.oskin.ad_board.model;
 
 public enum AdSortType {
     DEFAULT(""),
-    PRICE_MIN("price, "),
-    PRICE_MAX("price DESC, "),
+    PRICE_ASC("price, "),
+    PRICE_DESC("price DESC, "),
     CREATE_DATE_TIME("a.createdDateTime DESC, ");
 
     private final String HqlString;
