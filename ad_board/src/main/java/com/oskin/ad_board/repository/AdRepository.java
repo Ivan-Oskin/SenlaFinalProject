@@ -3,7 +3,6 @@ package com.oskin.ad_board.repository;
 import com.oskin.ad_board.dto.request.GetAdRequest;
 import com.oskin.ad_board.model.Ad;
 import com.oskin.ad_board.model.AdSortType;
-import com.oskin.ad_board.model.City;
 import com.oskin.ad_board.model.StatusAd;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -71,7 +70,7 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
             TypedQuery<Ad> query = entityManager.createQuery(hql, Ad.class);
             query.setParameter("search", "%" + title + "%");
             if (getAdRequest.getAdSortType() == AdSortType.DEFAULT) query.setParameter("exact", title);
-            if(city != null) query.setParameter("city", city);
+            if (city != null) query.setParameter("city", city);
             query.setParameter("active", StatusAd.ACTIVE);
             query.setParameter("reserved", StatusAd.RESERVED);
             list = query.getResultList();

@@ -1,15 +1,15 @@
 package com.oskin.ad_board.utils;
 
 import com.oskin.ad_board.dto.request.AdRequest;
+import com.oskin.ad_board.dto.request.MessageRequest;
 import com.oskin.ad_board.dto.request.ProfileRequest;
 import com.oskin.ad_board.dto.request.ReviewRequest;
-import com.oskin.ad_board.dto.response.AdResponse;
-import com.oskin.ad_board.dto.response.DealResponse;
-import com.oskin.ad_board.dto.response.ProfileResponse;
-import com.oskin.ad_board.dto.response.ReviewResponse;
+import com.oskin.ad_board.dto.response.*;
 import com.oskin.ad_board.model.*;
 import jakarta.persistence.Tuple;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class MapperDto {
@@ -99,5 +99,30 @@ public class MapperDto {
         reviewResponse.setCreatedDateTime(review.getCreatedDateTime());
         reviewResponse.setRating(review.getRating());
         return reviewResponse;
+    }
+
+    public MessageResponse messageToResponse(Tuple tuple) {
+        MessageResponse messageResponse = new MessageResponse();
+        Message message = tuple.get("message", Message.class);
+        String userName = tuple.get("userName", String.class);
+        messageResponse.setSenderName(userName);
+        messageResponse.setText(message.getMessage());
+        messageResponse.setSendDateTime(message.getSendDateTime());
+        return messageResponse;
+    }
+
+    public DialogResponse dialogToResponse(Dialog dialog, List<MessageResponse> messageResponses) {
+        DialogResponse dialogResponse = new DialogResponse();
+        dialogResponse.setAdTitle(dialog.getAd().getTitle());
+        dialogResponse.setList(messageResponses);
+        return dialogResponse;
+    }
+
+    public Message messageRequestToEntity(MessageRequest messageRequest, User user, Dialog dialog) {
+        Message message = new Message();
+        message.setMessage(messageRequest.getMessage());
+        message.setDialog(dialog);
+        message.setUser(user);
+        return message;
     }
 }
