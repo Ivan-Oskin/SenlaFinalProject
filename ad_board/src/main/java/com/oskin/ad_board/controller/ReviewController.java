@@ -35,7 +35,7 @@ public class ReviewController {
         return reviewService.delete(commentId, authorId);
     }
 
-    @GetMapping("{ad_id}")
+    @GetMapping("/{ad_id}")
     public List<ReviewResponse> getReviewsAd(@PathVariable("ad_id") int adId, @RequestBody GetReviewRequest getReviewRequest) {
         return reviewService.getReviewByAd(adId, getReviewRequest);
     }

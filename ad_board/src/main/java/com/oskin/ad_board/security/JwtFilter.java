@@ -36,6 +36,10 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
+        String method = request.getMethod();
+        if(method.equals("GET") && (path.startsWith("/ad") || path.startsWith("/profile") || path.startsWith("/review"))) {
+            return true;
+        }
         return permitAllPaths.stream().anyMatch(path::equals);
     }
 
