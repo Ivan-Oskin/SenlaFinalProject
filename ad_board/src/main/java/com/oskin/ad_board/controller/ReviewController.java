@@ -3,6 +3,7 @@ package com.oskin.ad_board.controller;
 import com.oskin.ad_board.dto.request.GetReviewRequest;
 import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
+import com.oskin.ad_board.dto.response.PaginationReviewResponse;
 import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.service.ReviewService;
 import com.oskin.ad_board.utils.JwtUtils;
@@ -36,7 +37,7 @@ public class ReviewController {
     }
 
     @GetMapping("/{ad_id}")
-    public List<ReviewResponse> getReviewsAd(@PathVariable("ad_id") int adId, @RequestBody GetReviewRequest getReviewRequest) {
+    public PaginationReviewResponse getReviewsAd(@PathVariable("ad_id") int adId, @RequestBody GetReviewRequest getReviewRequest) {
         return reviewService.getReviewByAd(adId, getReviewRequest);
     }
 }

@@ -7,6 +7,7 @@ import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.*;
 import com.oskin.ad_board.model.*;
 import jakarta.persistence.Tuple;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -124,5 +125,15 @@ public class MapperDto {
         message.setDialog(dialog);
         message.setUser(user);
         return message;
+    }
+
+    public PaginationReviewResponse ReviewsToPaginationResponse(List<ReviewResponse> list) {
+        ReviewResponse lastReviewResponse = list.get(list.size()-1);
+        PaginationReviewResponse paginationReviewResponse = new PaginationReviewResponse();
+        paginationReviewResponse.setList(list);
+        paginationReviewResponse.setLastId(lastReviewResponse.getId());
+        paginationReviewResponse.setLastDateTime(lastReviewResponse.getCreatedDateTime());
+        paginationReviewResponse.setLastRating(lastReviewResponse.getRating());
+        return paginationReviewResponse;
     }
 }
