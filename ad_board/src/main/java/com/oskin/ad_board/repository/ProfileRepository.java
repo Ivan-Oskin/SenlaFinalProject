@@ -15,7 +15,7 @@ import java.util.Optional;
 public class ProfileRepository extends AbstractCrudRepository<Profile> {
     @PersistenceContext
     EntityManager entityManager;
-    private final Logger log = LoggerFactory.getLogger(CityRepository.class);
+    private final Logger log = LoggerFactory.getLogger(ProfileRepository.class);
 
     @Autowired
     public ProfileRepository() {

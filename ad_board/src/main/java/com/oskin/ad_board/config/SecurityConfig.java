@@ -32,10 +32,18 @@ public class SecurityConfig {
                 csrf(CsrfConfigurer::disable).
                 authorizeHttpRequests(
                         aut -> aut
+                                .requestMatchers("/error").permitAll()
                                 .requestMatchers("/auth").permitAll()
                                 .requestMatchers("/reg").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/ad/**").hasRole("USER")
-                                .anyRequest().permitAll()
+                                .requestMatchers(HttpMethod.GET, "/ad/**").permitAll()
+                                .requestMatchers("/ad/**").hasRole("USER")
+                                .requestMatchers("/moderation/**").hasRole("ADMIN")
+                                .requestMatchers("/deal/**").hasRole("USER")
+                                .requestMatchers("/dialog/**").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/profile/**").permitAll()
+                                .requestMatchers("/profile/**").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/review/**").permitAll()
+                                .requestMatchers("/review/**").hasRole("USER")
                 )
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

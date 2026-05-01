@@ -1,19 +1,27 @@
 package com.oskin.ad_board.service;
 
 import com.oskin.ad_board.dto.request.AdRequest;
+import com.oskin.ad_board.dto.request.GetAdRequest;
+import com.oskin.ad_board.dto.request.GetAdToModeration;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
-import com.oskin.ad_board.model.Ad;
-import com.oskin.ad_board.model.City;
+import com.oskin.ad_board.dto.response.PaginationAdModerationResponse;
+import com.oskin.ad_board.dto.response.PaginationAdResponse;
 import com.oskin.ad_board.model.User;
+import com.oskin.ad_board.model.Profile;
+import com.oskin.ad_board.model.City;
+import com.oskin.ad_board.model.Ad;
+import com.oskin.ad_board.model.StatusAd;
 import com.oskin.ad_board.repository.AdRepository;
 import com.oskin.ad_board.repository.CityRepository;
+import com.oskin.ad_board.repository.ProfileRepository;
 import com.oskin.ad_board.repository.UserRepository;
 import com.oskin.ad_board.utils.MapperDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,26 +30,33 @@ public class AdService {
     private final UserRepository userRepository;
     private final CityRepository cityRepository;
     private final MapperDto mapperDto;
+    private final ProfileRepository profileRepository;
 
     @Autowired
-    public AdService(AdRepository adRepository, CityRepository cityRepository, UserRepository userRepository, MapperDto mapperDto) {
+    public AdService(AdRepository adRepository,
+                     CityRepository cityRepository,
+                     UserRepository userRepository,
+                     MapperDto mapperDto,
+                     ProfileRepository profileRepository) {
         this.adRepository = adRepository;
         this.cityRepository = cityRepository;
         this.userRepository = userRepository;
         this.mapperDto = mapperDto;
+        this.profileRepository = profileRepository;
     }
 
     @Transactional
     public BooleanResponse save(AdRequest adRequest, int idSeller) {
-        Ad ad = new Ad();
         BooleanResponse booleanResponse = new BooleanResponse(false);
         String cityName = adRequest.getCityLowerCase();
         Optional<User> userOptional = userRepository.findById(idSeller);
         Optional<City> cityOptional = cityRepository.findByName(cityName);
-        if(userOptional.isPresent() && cityOptional.isPresent()) {
+        Optional<Profile> profileOptional = profileRepository.findByUserId(idSeller);
+        if (userOptional.isPresent() && cityOptional.isPresent() && profileOptional.isPresent()) {
             User user = userOptional.get();
             City city = cityOptional.get();
-            ad = mapperDto.adRequestToEntity(adRequest, user, city);
+            Ad ad = mapperDto.adRequestToEntity(adRequest, user, city);
+            ad.setStatus(StatusAd.DRAFT);
             booleanResponse.setBool(adRepository.create(ad));
         }
         return booleanResponse;
@@ -52,13 +67,16 @@ public class AdService {
         Optional<Ad> adOptional = adRepository.findById(idAd);
         Optional<City> cityOptional = cityRepository.findByName(adRequest.getCityLowerCase());
         BooleanResponse booleanResponse = new BooleanResponse(false);
-        if(adOptional.isPresent() && cityOptional.isPresent()) {
+        if (adOptional.isPresent() && cityOptional.isPresent()) {
             Ad ad = adOptional.get();
-            if(ad.getSeller().getId() == idSeller) {
+            if (ad.getSeller().getId() == idSeller && ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
                 ad.setTitle(adRequest.getTitle());
                 ad.setPrice(adRequest.getPrice());
                 ad.setCity(cityOptional.get());
                 ad.setDescription(adRequest.getDescription());
+                if (ad.getStatus() == StatusAd.HIDDEN || ad.getStatus() == StatusAd.ACTIVE) {
+                    ad.setStatus(StatusAd.MODERATION);
+                }
                 booleanResponse.setBool(adRepository.update(ad));
             }
         }
@@ -69,9 +87,9 @@ public class AdService {
     public BooleanResponse delete(int idAd, int idSeller) {
         BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<Ad> adOptional = adRepository.findById(idAd);
-        if(adOptional.isPresent()) {
+        if (adOptional.isPresent()) {
             Ad ad = adOptional.get();
-            if(ad.getSeller().getId() == idSeller) {
+            if (ad.getSeller().getId() == idSeller) {
                 booleanResponse.setBool(adRepository.delete(ad));
             }
         }
@@ -82,5 +100,100 @@ public class AdService {
         Optional<Ad> optional = adRepository.findById(id);
         Ad ad = optional.orElseThrow();
         return mapperDto.adToResponse(ad);
+    }
+
+    public PaginationAdResponse findByTitle(GetAdRequest getAdRequest) {
+        List<Ad> list = adRepository.searchByTitle(getAdRequest);
+        int page = getAdRequest.getPage();
+        List<AdResponse> adResponseList = list.stream().map(mapperDto::adToResponse).toList();
+        return mapperDto.adToPaginationResponse(adResponseList, page);
+    }
+
+    @Transactional
+    public BooleanResponse publishBySeller(int adId, int sellerId) {
+        BooleanResponse booleanResponse = new BooleanResponse(false);
+        Optional<User> userOptional = userRepository.findById(sellerId);
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (userOptional.isPresent() && adOptional.isPresent()) {
+            Ad ad = adOptional.get();
+            if (ad.getSeller().getId() == userOptional.get().getId()) {
+                ad.setStatus(StatusAd.MODERATION);
+                booleanResponse.setBool(adRepository.update(ad));
+            }
+        }
+        return booleanResponse;
+    }
+
+    @Transactional
+    public BooleanResponse archiveBySeller(int adId, int sellerId) {
+        BooleanResponse booleanResponse = new BooleanResponse(false);
+        Optional<User> userOptional = userRepository.findById(sellerId);
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (userOptional.isPresent() && adOptional.isPresent()) {
+            Ad ad = adOptional.get();
+            if (ad.getSeller().getId() == userOptional.get().getId()) {
+                ad.setStatus(StatusAd.ARCHIVED);
+                booleanResponse.setBool(adRepository.update(ad));
+            }
+        }
+        return booleanResponse;
+    }
+
+    @Transactional
+    public BooleanResponse publishAdByModeration(int adId) {
+        BooleanResponse booleanResponse = new BooleanResponse(false);
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (adOptional.isPresent()) {
+            Ad ad = adOptional.get();
+            if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.HIDDEN) {
+                ad.setStatus(StatusAd.ACTIVE);
+                booleanResponse.setBool(adRepository.update(ad));
+            }
+        }
+        return booleanResponse;
+    }
+
+    @Transactional
+    public BooleanResponse hideAdByModeration(int adId) {
+        BooleanResponse booleanResponse = new BooleanResponse(false);
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (adOptional.isPresent()) {
+            Ad ad = adOptional.get();
+            if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.ACTIVE) {
+                ad.setStatus(StatusAd.HIDDEN);
+                booleanResponse.setBool(adRepository.update(ad));
+            }
+        }
+        return booleanResponse;
+    }
+
+    @Transactional
+    public BooleanResponse payAd(int adId) {
+        BooleanResponse booleanResponse = new BooleanResponse(false);
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (adOptional.isPresent()) {
+            Ad ad = adOptional.get();
+            ad.setPaid(true);
+            booleanResponse.setBool(adRepository.update(ad));
+        }
+        return booleanResponse;
+    }
+
+    @Transactional
+    public BooleanResponse removePaidAd(int adId) {
+        BooleanResponse booleanResponse = new BooleanResponse(false);
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (adOptional.isPresent()) {
+            Ad ad = adOptional.get();
+            ad.setPaid(false);
+            booleanResponse.setBool(adRepository.update(ad));
+        }
+        return booleanResponse;
+    }
+
+    public PaginationAdModerationResponse getModerationList(GetAdToModeration getAdToModeration) {
+        List<Ad> list = adRepository.findAllToModeration(getAdToModeration);
+        List<AdResponse> adResponseList = list.stream().map(mapperDto::adToResponse).toList();
+        return mapperDto.adToModerationPaginationResponse(adResponseList);
     }
 }
