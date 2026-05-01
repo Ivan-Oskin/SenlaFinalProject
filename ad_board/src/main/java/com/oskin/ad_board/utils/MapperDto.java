@@ -7,9 +7,9 @@ import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.*;
 import com.oskin.ad_board.model.*;
 import jakarta.persistence.Tuple;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -109,13 +109,29 @@ public class MapperDto {
         messageResponse.setSenderName(userName);
         messageResponse.setText(message.getMessage());
         messageResponse.setSendDateTime(message.getSendDateTime());
+        messageResponse.setId(message.getId());
+        return messageResponse;
+    }
+
+    public MessageResponse messageToResponse(Message message, Profile profile) {
+        MessageResponse messageResponse = new MessageResponse();
+        String userName = profile.getName();
+        messageResponse.setSenderName(userName);
+        messageResponse.setText(message.getMessage());
+        messageResponse.setSendDateTime(message.getSendDateTime());
+        messageResponse.setId(message.getId());
         return messageResponse;
     }
 
     public DialogResponse dialogToResponse(Dialog dialog, List<MessageResponse> messageResponses) {
         DialogResponse dialogResponse = new DialogResponse();
+        int lastId = 0;
+        if(!messageResponses.isEmpty()) {
+            lastId = messageResponses.get(messageResponses.size()-1).getId();
+        }
         dialogResponse.setAdTitle(dialog.getAd().getTitle());
         dialogResponse.setList(messageResponses);
+        dialogResponse.setLastId(lastId);
         return dialogResponse;
     }
 
@@ -128,12 +144,38 @@ public class MapperDto {
     }
 
     public PaginationReviewResponse ReviewsToPaginationResponse(List<ReviewResponse> list) {
-        ReviewResponse lastReviewResponse = list.get(list.size()-1);
         PaginationReviewResponse paginationReviewResponse = new PaginationReviewResponse();
         paginationReviewResponse.setList(list);
-        paginationReviewResponse.setLastId(lastReviewResponse.getId());
-        paginationReviewResponse.setLastDateTime(lastReviewResponse.getCreatedDateTime());
-        paginationReviewResponse.setLastRating(lastReviewResponse.getRating());
+        if(!list.isEmpty()) {
+            ReviewResponse lastReviewResponse = list.get(list.size() - 1);
+            paginationReviewResponse.setLastId(lastReviewResponse.getId());
+            paginationReviewResponse.setLastDateTime(lastReviewResponse.getCreatedDateTime());
+            paginationReviewResponse.setLastRating(lastReviewResponse.getRating());
+        } else {
+            paginationReviewResponse.setLastId(0);
+            paginationReviewResponse.setLastDateTime(null);
+            paginationReviewResponse.setLastRating(0);
+        }
         return paginationReviewResponse;
+    }
+
+    public PaginationAdResponse adToPaginationResponse(List<AdResponse> list, int page) {
+        PaginationAdResponse paginationAdResponse = new PaginationAdResponse();
+        paginationAdResponse.setAdResponseList(list);
+        paginationAdResponse.setThisPage(page);
+        return paginationAdResponse;
+    }
+
+    public PaginationAdModerationResponse adToModerationPaginationResponse(List<AdResponse> list) {
+        PaginationAdModerationResponse paginationAdResponse = new PaginationAdModerationResponse();
+        int lastId;
+        if(!list.isEmpty()) {
+            lastId = list.get(list.size() - 1).getId();
+        } else {
+            lastId = 0;
+        }
+        paginationAdResponse.setAdResponseList(list);
+        paginationAdResponse.setLastId(lastId);
+        return paginationAdResponse;
     }
 }

@@ -1,7 +1,9 @@
 package com.oskin.ad_board.controller;
 
+import com.oskin.ad_board.dto.request.GetAdToModeration;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
+import com.oskin.ad_board.dto.response.PaginationAdModerationResponse;
 import com.oskin.ad_board.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +41,7 @@ public class ModerationController {
     }
 
     @GetMapping
-    public List<AdResponse> getModerationList() {
-        return adService.getModerationList();
+    public PaginationAdModerationResponse getModerationList(@RequestBody GetAdToModeration getAdToModeration) {
+        return adService.getModerationList(getAdToModeration);
     }
 }

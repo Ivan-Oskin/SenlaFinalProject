@@ -2,13 +2,15 @@ package com.oskin.ad_board.service;
 
 import com.oskin.ad_board.dto.request.AdRequest;
 import com.oskin.ad_board.dto.request.GetAdRequest;
+import com.oskin.ad_board.dto.request.GetAdToModeration;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
+import com.oskin.ad_board.dto.response.PaginationAdModerationResponse;
+import com.oskin.ad_board.dto.response.PaginationAdResponse;
 import com.oskin.ad_board.model.User;
 import com.oskin.ad_board.model.Profile;
 import com.oskin.ad_board.model.City;
 import com.oskin.ad_board.model.Ad;
-import com.oskin.ad_board.model.AdSortType;
 import com.oskin.ad_board.model.StatusAd;
 import com.oskin.ad_board.repository.AdRepository;
 import com.oskin.ad_board.repository.CityRepository;
@@ -100,9 +102,11 @@ public class AdService {
         return mapperDto.adToResponse(ad);
     }
 
-    public List<AdResponse> findByTitle(GetAdRequest getAdRequest) {
+    public PaginationAdResponse findByTitle(GetAdRequest getAdRequest) {
         List<Ad> list = adRepository.searchByTitle(getAdRequest);
-        return list.stream().map(mapperDto::adToResponse).toList();
+        int page = getAdRequest.getPage();
+        List<AdResponse> adResponseList = list.stream().map(mapperDto::adToResponse).toList();
+        return mapperDto.adToPaginationResponse(adResponseList, page);
     }
 
     @Transactional
@@ -187,14 +191,9 @@ public class AdService {
         return booleanResponse;
     }
 
-    public List<AdResponse> getModerationList() {
-        List<Ad> list = adRepository.findAllToModeration();
-        return list.stream().map(mapperDto::adToResponse).toList();
+    public PaginationAdModerationResponse getModerationList(GetAdToModeration getAdToModeration) {
+        List<Ad> list = adRepository.findAllToModeration(getAdToModeration);
+        List<AdResponse> adResponseList = list.stream().map(mapperDto::adToResponse).toList();
+        return mapperDto.adToModerationPaginationResponse(adResponseList);
     }
-
-    public List<AdResponse> findBySeller(int id) {
-        List<Ad> list = adRepository.findBySeller(id);
-        return list.stream().map(mapperDto::adToResponse).toList();
-    }
-
 }

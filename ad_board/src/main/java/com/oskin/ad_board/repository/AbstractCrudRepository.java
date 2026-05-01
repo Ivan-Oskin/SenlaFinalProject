@@ -1,5 +1,6 @@
 package com.oskin.ad_board.repository;
 
+import com.oskin.ad_board.model.Dialog;
 import com.oskin.ad_board.model.IIdentified;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -90,6 +91,19 @@ public abstract class AbstractCrudRepository<T extends IIdentified> implements C
         } catch (Exception e) {
             log.error("error update exception => {}", e.getMessage());
             return false;
+        }
+    }
+
+    public T createAndGet(T object) {
+        try {
+            log.info("start saveAndGet");
+            entityManager.persist(object);
+            entityManager.flush();
+            log.info("successful saveAndGet");
+            return object;
+        } catch (Exception e) {
+            log.error("error saveAndGet, exception => {}", e.getMessage());
+            return null;
         }
     }
 }

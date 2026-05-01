@@ -3,6 +3,7 @@ package com.oskin.ad_board.controller;
 import com.oskin.ad_board.dto.request.GetDialogRequest;
 import com.oskin.ad_board.dto.request.MessageRequest;
 import com.oskin.ad_board.dto.response.DialogResponse;
+import com.oskin.ad_board.dto.response.MessageResponse;
 import com.oskin.ad_board.service.DialogService;
 import com.oskin.ad_board.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class DialogController {
     }
 
     @PostMapping
-    public DialogResponse sendMessage(@RequestBody MessageRequest messageRequest) {
+    public MessageResponse sendMessage(@RequestBody MessageRequest messageRequest) {
         int currentIdFRomJwt = jwtUtils.getCurrentId();
         return dialogService.sendMessage(currentIdFRomJwt, messageRequest);
     }

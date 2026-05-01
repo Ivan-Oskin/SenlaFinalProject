@@ -4,14 +4,8 @@ import com.oskin.ad_board.dto.request.GetDialogRequest;
 import com.oskin.ad_board.dto.request.MessageRequest;
 import com.oskin.ad_board.dto.response.DialogResponse;
 import com.oskin.ad_board.dto.response.MessageResponse;
-import com.oskin.ad_board.model.Ad;
-import com.oskin.ad_board.model.Dialog;
-import com.oskin.ad_board.model.Message;
-import com.oskin.ad_board.model.User;
-import com.oskin.ad_board.repository.AdRepository;
-import com.oskin.ad_board.repository.DialogRepository;
-import com.oskin.ad_board.repository.MessageRepository;
-import com.oskin.ad_board.repository.UserRepository;
+import com.oskin.ad_board.model.*;
+import com.oskin.ad_board.repository.*;
 import com.oskin.ad_board.utils.MapperDto;
 import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +23,21 @@ public class DialogService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final MapperDto mapperDto;
+    private final ProfileRepository profileRepository;
 
     @Autowired
     public DialogService(DialogRepository DialogRepository,
                          AdRepository adRepository,
                          UserRepository userRepository,
                          MessageRepository messageRepository,
-                         MapperDto mapperDto) {
+                         MapperDto mapperDto,
+                         ProfileRepository profileRepository) {
         this.dialogRepository = DialogRepository;
         this.adRepository = adRepository;
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
         this.mapperDto = mapperDto;
+        this.profileRepository = profileRepository;
     }
 
     private int getCurrentBuyerId(int buyerId, Ad ad, int jwtId) {
@@ -63,7 +60,7 @@ public class DialogService {
             Optional<User> buyerOptional = userRepository.findById(buyerId);
             if (buyerOptional.isPresent()) {
                 User buyer = buyerOptional.get();
-                return getDialogResponse(buyer, ad);
+                return getDialogResponse(buyer, ad, getDialogRequest);
             }
         }
         return null;
@@ -76,11 +73,11 @@ public class DialogService {
         return dialogRepository.createAndGet(dialog);
     }
 
-    private DialogResponse getDialogResponse(User buyer, Ad ad) {
+    private DialogResponse getDialogResponse(User buyer, Ad ad, GetDialogRequest getDialogRequest) {
         Optional<Dialog> dialogOptional = dialogRepository.findByAdAndBuyer(ad.getId(), buyer.getId());
         if (dialogOptional.isPresent()) {
             Dialog dialog = dialogOptional.get();
-            List<Tuple> messages = messageRepository.getMessagesByDialog(dialog.getId());
+            List<Tuple> messages = messageRepository.getMessagesByDialog(dialog.getId(), getDialogRequest);
             List<MessageResponse> messageResponses = messages.stream().map(mapperDto::messageToResponse).toList();
             return mapperDto.dialogToResponse(dialog, messageResponses);
         } else {
@@ -90,13 +87,14 @@ public class DialogService {
     }
 
     @Transactional
-    public DialogResponse sendMessage(int senderId, MessageRequest messageRequest) {
+    public MessageResponse sendMessage(int senderId, MessageRequest messageRequest) {
         int adId = messageRequest.getAdId();
         Optional<Ad> adOptional = adRepository.findById(adId);
         if (adOptional.isPresent()) {
             Ad ad = adOptional.get();
             Optional<User> userOptional = userRepository.findById(senderId);
-            if (userOptional.isPresent()) {
+            Optional<Profile> profileOptional = profileRepository.findByUserId(senderId);
+            if (userOptional.isPresent() && profileOptional.isPresent()) {
                 User sender = userOptional.get();
                 Dialog dialog = new Dialog();
                 User buyer = new User();
@@ -114,8 +112,8 @@ public class DialogService {
                     buyer = sender;
                 }
                 Message message = mapperDto.messageRequestToEntity(messageRequest, sender, dialog);
-                messageRepository.create(message);
-                return getDialogResponse(buyer, ad);
+                message = messageRepository.createAndGet(message);
+                return mapperDto.messageToResponse(message, profileOptional.get());
             }
         }
         return null;

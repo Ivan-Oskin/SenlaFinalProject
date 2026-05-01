@@ -41,19 +41,4 @@ public class DialogRepository extends AbstractCrudRepository<Dialog> {
             return Optional.empty();
         }
     }
-
-    public Dialog createAndGet(Dialog dialog) {
-        try {
-            log.info("dialog id before = > {}", dialog.getId());
-            log.info("start save");
-            entityManager.persist(dialog);
-            entityManager.flush();
-            log.info("successful save");
-            log.info("dialog id after => {}", dialog.getId());
-            return dialog;
-        } catch (Exception e) {
-            log.error("error save, exception => {}", e.getMessage());
-            return null;
-        }
-    }
 }

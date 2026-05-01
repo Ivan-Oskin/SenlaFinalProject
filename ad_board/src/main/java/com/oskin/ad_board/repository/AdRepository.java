@@ -1,6 +1,7 @@
 package com.oskin.ad_board.repository;
 
 import com.oskin.ad_board.dto.request.GetAdRequest;
+import com.oskin.ad_board.dto.request.GetAdToModeration;
 import com.oskin.ad_board.model.Ad;
 import com.oskin.ad_board.model.AdSortType;
 import com.oskin.ad_board.model.StatusAd;
@@ -73,6 +74,8 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
             if (city != null) query.setParameter("city", city);
             query.setParameter("active", StatusAd.ACTIVE);
             query.setParameter("reserved", StatusAd.RESERVED);
+            query.setFirstResult(getAdRequest.getCount() * getAdRequest.getPage());
+            query.setMaxResults(getAdRequest.getCount());
             list = query.getResultList();
             log.info("successful findByTitle");
             return list;
@@ -82,34 +85,27 @@ public class AdRepository extends AbstractCrudRepository<Ad> {
         }
     }
 
-    public List<Ad> findBySeller(int sellerId) {
+    public List<Ad> findAllToModeration(GetAdToModeration getAdToModeration) {
         List<Ad> list = new ArrayList<>();
-        try {
-            log.info("start findBySeller");
-            TypedQuery<Ad> query = entityManager.createQuery("FROM Ad a " +
-                    "JOIN FETCH a.city c " +
-                    "JOIN FETCH a.seller s " +
-                    "WHERE a.seller.id = :id", Ad.class);
-            query.setParameter("id", sellerId);
-            list = query.getResultList();
-            log.info("successful findBySeller");
-            return list;
-        } catch (Exception e) {
-            log.info("error findBySeller, exception => {}", e.getMessage());
-            return list;
-        }
-    }
+        int lastId = getAdToModeration.getLastId();
+        int count = getAdToModeration.getCount();
+        String hql = "FROM Ad a " +
+                "JOIN FETCH a.city c " +
+                "JOIN FETCH a.seller s " +
+                "WHERE a.status = :status ";
 
-    public List<Ad> findAllToModeration() {
-        List<Ad> list = new ArrayList<>();
+        if (lastId > 0) {
+            hql += "and a.id > :lastId ";
+        }
+        hql += "order by a.id limit :count";
         try {
             log.info("start findAllToModeration");
-            TypedQuery<Ad> query = entityManager.createQuery(
-                    "FROM Ad a " +
-                            "JOIN FETCH a.city c " +
-                            "JOIN FETCH a.seller s " +
-                            "WHERE a.status = :status", Ad.class);
+            TypedQuery<Ad> query = entityManager.createQuery(hql, Ad.class);
             query.setParameter("status", StatusAd.MODERATION);
+            if (lastId > 0) {
+                query.setParameter("lastId", lastId);
+            }
+            query.setParameter("count", count);
             list = query.getResultList();
             log.info("successful findAllToModeration");
             return list;

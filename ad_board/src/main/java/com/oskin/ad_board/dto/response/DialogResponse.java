@@ -4,6 +4,16 @@ import java.util.List;
 
 public class DialogResponse {
     String adTitle;
+    int lastId;
+
+    public int getLastId() {
+        return lastId;
+    }
+
+    public void setLastId(int lastId) {
+        this.lastId = lastId;
+    }
+
     List<MessageResponse> list;
 
     public String getAdTitle() {

@@ -3,6 +3,7 @@ package com.oskin.ad_board.dto.request;
 public class MessageRequest {
     int adId;
     int buyerId;
+    String message;
 
     public int getBuyerId() {
         return buyerId;
@@ -11,8 +12,6 @@ public class MessageRequest {
     public void setBuyerId(int buyerId) {
         this.buyerId = buyerId;
     }
-
-    String message;
 
     public int getAdId() {
         return adId;

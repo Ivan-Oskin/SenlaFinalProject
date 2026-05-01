@@ -4,6 +4,7 @@ import com.oskin.ad_board.dto.request.AdRequest;
 import com.oskin.ad_board.dto.request.GetAdRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
+import com.oskin.ad_board.dto.response.PaginationAdResponse;
 import com.oskin.ad_board.service.AdService;
 import com.oskin.ad_board.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class AdController {
     }
 
     @GetMapping
-    public List<AdResponse> findByTitle(@RequestBody GetAdRequest getAdRequest) {
+    public PaginationAdResponse findByTitle(@RequestBody GetAdRequest getAdRequest) {
         return adService.findByTitle(getAdRequest);
     }
 
