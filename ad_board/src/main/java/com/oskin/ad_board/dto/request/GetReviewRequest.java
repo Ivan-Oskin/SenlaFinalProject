@@ -2,16 +2,18 @@ package com.oskin.ad_board.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.oskin.ad_board.model.ReviewSortType;
+import jakarta.validation.constraints.Min;
 
 import java.time.LocalDateTime;
 
 public class GetReviewRequest {
     ReviewSortType reviewSortType;
+    @Min(value = 1, message = "the count must be more than 1")
+    int count;
     int lastId;
+    double lastRating;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime lastDateTime;
-    int count;
-    double lastRating;
 
     public double getLastRating() {
         return lastRating;

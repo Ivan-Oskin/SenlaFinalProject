@@ -1,6 +1,9 @@
 package com.oskin.ad_board.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public class DealRequest {
+    @NotNull(message = "The deal must have a adId")
     int adId;
     int buyerId;
 

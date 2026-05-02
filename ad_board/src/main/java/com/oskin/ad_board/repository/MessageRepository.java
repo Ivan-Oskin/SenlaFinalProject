@@ -10,12 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.validation.annotation.Validated;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Validated
 public class MessageRepository extends AbstractCrudRepository<Message> {
 
     @PersistenceContext

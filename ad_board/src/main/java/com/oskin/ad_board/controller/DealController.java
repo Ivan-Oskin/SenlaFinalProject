@@ -3,16 +3,18 @@ package com.oskin.ad_board.controller;
 import com.oskin.ad_board.dto.request.DealRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.DealResponse;
-import com.oskin.ad_board.repository.DealRepository;
 import com.oskin.ad_board.service.DealService;
 import com.oskin.ad_board.utils.JwtUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/deal")
+@Validated
 public class DealController {
     private final JwtUtils jwtUtils;
     private final DealService dealService;
@@ -36,7 +38,7 @@ public class DealController {
     }
 
     @PostMapping("/create")
-    public BooleanResponse createDeal(@RequestBody DealRequest dealRequest) {
+    public BooleanResponse createDeal(@RequestBody @Valid DealRequest dealRequest) {
         int userId = jwtUtils.getCurrentId();
         return dealService.save(dealRequest, userId);
     }

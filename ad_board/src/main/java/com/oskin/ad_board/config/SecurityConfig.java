@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 .requestMatchers("/profile/**").hasRole("USER")
                                 .requestMatchers(HttpMethod.GET, "/review/**").permitAll()
                                 .requestMatchers("/review/**").hasRole("USER")
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

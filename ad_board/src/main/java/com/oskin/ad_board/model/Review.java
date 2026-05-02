@@ -1,6 +1,14 @@
 package com.oskin.ad_board.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -76,20 +84,5 @@ public class Review implements IIdentified {
 
     public void setAd(Ad ad) {
         this.ad = ad;
-    }
-
-    public Review(User author, Ad ad, int rating, String comment) {
-        this.author = author;
-        this.ad = ad;
-        this.rating = rating;
-        this.comment = comment;
-    }
-
-    public Review(int id, User author, Ad ad, int rating, String comment) {
-        this.id = id;
-        this.author = author;
-        this.ad = ad;
-        this.rating = rating;
-        this.comment = comment;
     }
 }

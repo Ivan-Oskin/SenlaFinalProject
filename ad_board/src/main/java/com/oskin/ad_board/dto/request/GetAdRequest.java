@@ -1,12 +1,16 @@
 package com.oskin.ad_board.dto.request;
 
 import com.oskin.ad_board.model.AdSortType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 public class GetAdRequest {
+    @NotBlank(message = "the title cannot be empty")
     private String title;
     private boolean paid;
     private String city;
     private AdSortType adSortType;
+    @Min(value = 1, message = "the count must be more than 0")
     private int count;
     private int page;
 

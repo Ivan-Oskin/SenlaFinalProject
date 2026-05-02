@@ -5,6 +5,7 @@ import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.ProfileResponse;
 import com.oskin.ad_board.service.ProfileService;
 import com.oskin.ad_board.utils.JwtUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +33,13 @@ public class ProfileController {
     }
 
     @PostMapping
-    public BooleanResponse createProfile(@RequestBody ProfileRequest profileRequest) {
+    public BooleanResponse createProfile(@RequestBody @Valid ProfileRequest profileRequest) {
         int idUser = jwtUtils.getCurrentId();
         return profileService.save(profileRequest, idUser);
     }
 
     @PutMapping
-    public BooleanResponse updateProfileByUser(@RequestBody ProfileRequest profileRequest) {
+    public BooleanResponse updateProfileByUser(@RequestBody @Valid ProfileRequest profileRequest) {
         int idUser = jwtUtils.getCurrentId();
         return profileService.update(profileRequest, idUser);
     }

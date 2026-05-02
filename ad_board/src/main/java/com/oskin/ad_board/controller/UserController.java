@@ -6,6 +6,7 @@ import com.oskin.ad_board.dto.response.JwtResponse;
 import com.oskin.ad_board.security.UserDetailService;
 import com.oskin.ad_board.service.UserService;
 import com.oskin.ad_board.utils.JwtUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/reg")
-    public JwtResponse save(@RequestBody UserRequest userRequest) {
+    public JwtResponse save(@RequestBody @Valid UserRequest userRequest) {
         BooleanResponse booleanResponse = userService.save(userRequest);
         if(booleanResponse.isBool()) {
             UserDetails userDetails = userDetailService.loadUserByUsername(userRequest.getMail());
@@ -42,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public JwtResponse createAuthToken(@RequestBody UserRequest userRequest) {
+    public JwtResponse createAuthToken(@RequestBody @Valid UserRequest userRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userRequest.getMail(), userRequest.getPassword()));
         UserDetails userDetails = userDetailService.loadUserByUsername(userRequest.getMail());
         String token = jwtUtils.generateToken(userDetails);
