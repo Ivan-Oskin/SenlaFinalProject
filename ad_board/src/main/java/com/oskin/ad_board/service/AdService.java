@@ -7,6 +7,8 @@ import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.PaginationAdModerationResponse;
 import com.oskin.ad_board.dto.response.PaginationAdResponse;
+import com.oskin.ad_board.exception.IdMatchException;
+import com.oskin.ad_board.exception.StatusNoValidException;
 import com.oskin.ad_board.model.User;
 import com.oskin.ad_board.model.Profile;
 import com.oskin.ad_board.model.City;
@@ -17,6 +19,7 @@ import com.oskin.ad_board.repository.CityRepository;
 import com.oskin.ad_board.repository.ProfileRepository;
 import com.oskin.ad_board.repository.UserRepository;
 import com.oskin.ad_board.utils.MapperDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,59 +49,53 @@ public class AdService {
     }
 
     @Transactional
-    public BooleanResponse save(AdRequest adRequest, int idSeller) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
+    public BooleanResponse save(AdRequest adRequest, int sellerId) {
         String cityName = adRequest.getCityLowerCase();
-        Optional<User> userOptional = userRepository.findById(idSeller);
+        Optional<User> userOptional = userRepository.findById(sellerId);
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id " + sellerId));
+        Optional<Profile> profileOptional = profileRepository.findByUserId(sellerId);
+        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id" + sellerId));
         Optional<City> cityOptional = cityRepository.findByName(cityName);
-        Optional<Profile> profileOptional = profileRepository.findByUserId(idSeller);
-        if (userOptional.isPresent() && cityOptional.isPresent() && profileOptional.isPresent()) {
-            User user = userOptional.get();
-            City city = cityOptional.get();
-            Ad ad = mapperDto.adRequestToEntity(adRequest, user, city);
-            ad.setStatus(StatusAd.DRAFT);
-            booleanResponse.setBool(adRepository.create(ad));
-        }
-        return booleanResponse;
+        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name " + cityName));
+        Ad ad = mapperDto.adRequestToEntity(adRequest, user, city);
+        ad.setStatus(StatusAd.DRAFT);
+        return new BooleanResponse(adRepository.create(ad));
     }
 
     @Transactional
-    public BooleanResponse update(AdRequest adRequest, int idAd, int idSeller) {
-        Optional<Ad> adOptional = adRepository.findById(idAd);
+    public BooleanResponse update(AdRequest adRequest, int adId, int sellerId) {
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
         Optional<City> cityOptional = cityRepository.findByName(adRequest.getCityLowerCase());
-        BooleanResponse booleanResponse = new BooleanResponse(false);
-        if (adOptional.isPresent() && cityOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            if (ad.getSeller().getId() == idSeller && ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
-                ad.setTitle(adRequest.getTitle());
-                ad.setPrice(adRequest.getPrice());
-                ad.setCity(cityOptional.get());
-                ad.setDescription(adRequest.getDescription());
-                if (ad.getStatus() == StatusAd.HIDDEN || ad.getStatus() == StatusAd.ACTIVE) {
-                    ad.setStatus(StatusAd.MODERATION);
-                }
-                booleanResponse.setBool(adRepository.update(ad));
-            }
+        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name " + adRequest.getCity()));
+        if (ad.getSeller().getId() != sellerId) {
+            throw new IdMatchException("the user's ID does not match the seller's ID");
         }
-        return booleanResponse;
+        if (ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
+            ad.setTitle(adRequest.getTitle());
+            ad.setPrice(adRequest.getPrice());
+            ad.setCity(city);
+            ad.setDescription(adRequest.getDescription());
+            if (ad.getStatus() == StatusAd.HIDDEN || ad.getStatus() == StatusAd.ACTIVE) {
+                ad.setStatus(StatusAd.MODERATION);
+            }
+            return new BooleanResponse(adRepository.update(ad));
+        } else throw new StatusNoValidException("ad have status COMPLETED or RESERVED");
     }
 
     @Transactional
-    public BooleanResponse delete(int idAd, int idSeller) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
-        Optional<Ad> adOptional = adRepository.findById(idAd);
-        if (adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            if (ad.getSeller().getId() == idSeller) {
-                booleanResponse.setBool(adRepository.delete(ad));
-            }
-        }
-        return booleanResponse;
+    public BooleanResponse delete(int adId, int sellerId) {
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        if (ad.getSeller().getId() == sellerId) {
+            return new BooleanResponse(adRepository.delete(ad));
+        } else throw new IdMatchException("the user's ID does not match the seller's ID");
+
     }
 
     public AdResponse findById(int id) {
-        Optional<Ad> optional = adRepository.findById(id);
-        Ad ad = optional.orElseThrow();
+        Optional<Ad> adOptional = adRepository.findById(id);
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + id));
         return mapperDto.adToResponse(ad);
     }
 
@@ -111,84 +108,62 @@ public class AdService {
 
     @Transactional
     public BooleanResponse publishBySeller(int adId, int sellerId) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<User> userOptional = userRepository.findById(sellerId);
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id " + sellerId));
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (userOptional.isPresent() && adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            if (ad.getSeller().getId() == userOptional.get().getId()) {
-                ad.setStatus(StatusAd.MODERATION);
-                booleanResponse.setBool(adRepository.update(ad));
-            }
-        }
-        return booleanResponse;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        if (ad.getSeller().getId() == user.getId()) {
+            ad.setStatus(StatusAd.MODERATION);
+            return new BooleanResponse(adRepository.update(ad));
+        } else throw new IdMatchException("the user's ID does not match the seller's ID");
     }
 
     @Transactional
     public BooleanResponse archiveBySeller(int adId, int sellerId) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<User> userOptional = userRepository.findById(sellerId);
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id " + sellerId));
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (userOptional.isPresent() && adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            if (ad.getSeller().getId() == userOptional.get().getId()) {
-                ad.setStatus(StatusAd.ARCHIVED);
-                booleanResponse.setBool(adRepository.update(ad));
-            }
-        }
-        return booleanResponse;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        if (ad.getSeller().getId() == user.getId()) {
+            ad.setStatus(StatusAd.ARCHIVED);
+            return new BooleanResponse(adRepository.update(ad));
+        } else throw new IdMatchException("the user's ID does not match the seller's ID");
     }
 
     @Transactional
     public BooleanResponse publishAdByModeration(int adId) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.HIDDEN) {
-                ad.setStatus(StatusAd.ACTIVE);
-                booleanResponse.setBool(adRepository.update(ad));
-            }
-        }
-        return booleanResponse;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.HIDDEN) {
+            ad.setStatus(StatusAd.ACTIVE);
+            return new BooleanResponse(adRepository.update(ad));
+        } else throw new IdMatchException("ad haven't status MODERATION or HIDDEN");
     }
 
     @Transactional
     public BooleanResponse hideAdByModeration(int adId) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.ACTIVE) {
-                ad.setStatus(StatusAd.HIDDEN);
-                booleanResponse.setBool(adRepository.update(ad));
-            }
-        }
-        return booleanResponse;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.ACTIVE) {
+            ad.setStatus(StatusAd.HIDDEN);
+            return new BooleanResponse(adRepository.update(ad));
+        } else throw new IdMatchException("ad haven't status MODERATION or ACTIVE");
     }
 
     @Transactional
     public BooleanResponse payAd(int adId) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            ad.setPaid(true);
-            booleanResponse.setBool(adRepository.update(ad));
-        }
-        return booleanResponse;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        ad.setPaid(true);
+        return new BooleanResponse(adRepository.update(ad));
     }
 
     @Transactional
     public BooleanResponse removePaidAd(int adId) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            ad.setPaid(false);
-            booleanResponse.setBool(adRepository.update(ad));
-        }
-        return booleanResponse;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        ad.setPaid(false);
+        return new BooleanResponse(adRepository.update(ad));
     }
 
     public PaginationAdModerationResponse getModerationList(GetAdToModeration getAdToModeration) {

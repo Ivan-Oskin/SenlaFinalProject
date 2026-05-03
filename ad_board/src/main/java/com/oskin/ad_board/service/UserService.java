@@ -22,13 +22,11 @@ public class UserService {
 
     @Transactional
     public BooleanResponse save(UserRequest userRequest) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         String mail = userRequest.getMail();
         String password = passwordEncoder.encode(userRequest.getPassword());
         Role role = new Role();
         role.setStandardUser();
         User user = new User(mail, password, role);
-        booleanResponse.setBool(userRepository.create(user));
-        return booleanResponse;
+        return new BooleanResponse(userRepository.create(user));
     }
 }
