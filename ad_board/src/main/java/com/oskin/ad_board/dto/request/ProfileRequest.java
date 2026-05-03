@@ -1,10 +1,19 @@
 package com.oskin.ad_board.dto.request;
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 public class ProfileRequest {
+    @NotBlank(message = "the name cannot be empty")
     String name;
+    @NotBlank(message = "the surname cannot be empty")
     String surname;
+    @Min(value = 18, message = "the age must be over 18 and under 100")
+    @Max(value = 100, message = "the age must be over 18 and under 100")
+    int age;
+    @NotBlank(message = "the city cannot be empty")
+    String city;
 
     public String getName() {
         return name;
@@ -44,7 +53,4 @@ public class ProfileRequest {
 
     public ProfileRequest() {
     }
-
-    int age;
-    String city;
 }

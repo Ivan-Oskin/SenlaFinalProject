@@ -1,6 +1,5 @@
 package com.oskin.ad_board.repository;
 
-import com.oskin.ad_board.model.Ad;
 import com.oskin.ad_board.model.Deal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

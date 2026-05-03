@@ -1,8 +1,13 @@
 package com.oskin.ad_board.dto.request;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class GetDialogRequest {
+    @NotNull(message = "The dialog must have a adId")
     int adId;
     int buyerId;
+    @Min(value = 1, message = "the count must be more than 1")
     int count;
     int lastId;
 

@@ -1,6 +1,16 @@
 package com.oskin.ad_board.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -68,12 +78,5 @@ public class Deal implements IIdentified {
         this.ad = ad;
         this.buyer = buyer;
         this.status = status;
-    }
-
-    public Deal(Ad ad, User buyer, StatusDeal status, int id) {
-        this.ad = ad;
-        this.buyer = buyer;
-        this.status = status;
-        this.id = id;
     }
 }

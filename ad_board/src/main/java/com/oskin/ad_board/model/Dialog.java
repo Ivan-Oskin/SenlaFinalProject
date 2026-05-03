@@ -1,6 +1,14 @@
 package com.oskin.ad_board.model;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "dialogs")
@@ -18,11 +26,6 @@ public class Dialog implements IIdentified {
     public Dialog() {
     }
 
-    public Dialog(Ad ad, User buyer) {
-        this.ad = ad;
-        this.buyer = buyer;
-    }
-
     public User getBuyer() {
         return buyer;
     }
@@ -37,12 +40,6 @@ public class Dialog implements IIdentified {
 
     public void setAd(Ad ad) {
         this.ad = ad;
-    }
-
-    public Dialog(int id, Ad ad, User buyer) {
-        this.id = id;
-        this.ad = ad;
-        this.buyer = buyer;
     }
 
     @Override

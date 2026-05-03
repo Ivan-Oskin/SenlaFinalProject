@@ -5,6 +5,8 @@ import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.PaginationReviewResponse;
 import com.oskin.ad_board.dto.response.ReviewResponse;
+import com.oskin.ad_board.exception.IdMatchException;
+import com.oskin.ad_board.exception.PaginationRequestException;
 import com.oskin.ad_board.model.Ad;
 import com.oskin.ad_board.model.Review;
 import com.oskin.ad_board.model.ReviewSortType;
@@ -13,6 +15,7 @@ import com.oskin.ad_board.repository.AdRepository;
 import com.oskin.ad_board.repository.ReviewRepository;
 import com.oskin.ad_board.repository.UserRepository;
 import com.oskin.ad_board.utils.MapperDto;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,36 +40,31 @@ public class ReviewService {
     }
 
     @Transactional
-    public BooleanResponse save(ReviewRequest reviewRequest, int adId, int idAuthor) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
-        Optional<User> userOptional = userRepository.findById(idAuthor);
+    public BooleanResponse save(ReviewRequest reviewRequest, int adId, int authorId) {
+        Optional<User> userOptional = userRepository.findById(authorId);
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("no found user with id = "+ authorId));
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (userOptional.isPresent() && adOptional.isPresent()) {
-            Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(), userOptional.get());
-            booleanResponse.setBool(reviewRepository.create(review));
-        }
-        return booleanResponse;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("no found ad with id "+ adId));
+        Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(), userOptional.get());
+        return new BooleanResponse(reviewRepository.create(review));
+
     }
 
     @Transactional
     public BooleanResponse delete(int reviewId, int authorId) {
-        BooleanResponse booleanResponse = new BooleanResponse(false);
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
-        if (reviewOptional.isPresent()) {
-            Review review = reviewOptional.get();
+        Review review = reviewOptional.orElseThrow(() -> new EntityNotFoundException("no found review with id " + reviewId));
             if (review.getAuthor().getId() == authorId) {
-                booleanResponse.setBool(reviewRepository.delete(review));
-            }
-        }
-        return booleanResponse;
+                return new BooleanResponse(reviewRepository.delete(review));
+            } else throw new IdMatchException("the user's ID does not match the review's ID");
     }
 
     public PaginationReviewResponse getReviewByAd(int adId, GetReviewRequest getReviewRequest) {
         if(getReviewRequest.getLastId() > 0) {
             if(getReviewRequest.getReviewSortType() == ReviewSortType.CREATED_DATE_TIME && getReviewRequest.getLastDateTime() == null) {
-                //throw exception
+                throw new PaginationRequestException("sort type = time, but last time = null");
             } else if (getReviewRequest.getReviewSortType() != ReviewSortType.CREATED_DATE_TIME && getReviewRequest.getLastRating() < 1) {
-                //throw exception
+                throw new PaginationRequestException("sort type = rating, but last rating = null");
             }
         }
         List<Tuple> list = reviewRepository.findByAd(adId, getReviewRequest);

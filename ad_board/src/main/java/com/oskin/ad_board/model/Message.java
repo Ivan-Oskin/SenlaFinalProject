@@ -1,6 +1,14 @@
 package com.oskin.ad_board.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -62,18 +70,5 @@ public class Message implements IIdentified {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Message(Dialog dialog, User user, String message) {
-        this.dialog = dialog;
-        this.user = user;
-        this.message = message;
-    }
-
-    public Message(int id, Dialog dialog, User user, String message) {
-        this.id = id;
-        this.dialog = dialog;
-        this.user = user;
-        this.message = message;
     }
 }

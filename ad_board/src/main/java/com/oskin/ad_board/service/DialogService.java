@@ -4,9 +4,11 @@ import com.oskin.ad_board.dto.request.GetDialogRequest;
 import com.oskin.ad_board.dto.request.MessageRequest;
 import com.oskin.ad_board.dto.response.DialogResponse;
 import com.oskin.ad_board.dto.response.MessageResponse;
+import com.oskin.ad_board.exception.IdMatchException;
 import com.oskin.ad_board.model.*;
 import com.oskin.ad_board.repository.*;
 import com.oskin.ad_board.utils.MapperDto;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,7 @@ public class DialogService {
         } else if (ad.getSeller().getId() == jwtId) {
             return buyerId;
         } else {
-            return 0;
+            throw new IdMatchException("the buyers's ID does not match the jwt's ID");
         }
     }
 
@@ -54,16 +56,11 @@ public class DialogService {
     public DialogResponse getDialog(int currentJwtId, GetDialogRequest getDialogRequest) {
         int adId = getDialogRequest.getAdId();
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            int buyerId = getCurrentBuyerId(getDialogRequest.getBuyerId(), ad, currentJwtId);
-            Optional<User> buyerOptional = userRepository.findById(buyerId);
-            if (buyerOptional.isPresent()) {
-                User buyer = buyerOptional.get();
-                return getDialogResponse(buyer, ad, getDialogRequest);
-            }
-        }
-        return null;
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id: " + adId));
+        int buyerId = getCurrentBuyerId(getDialogRequest.getBuyerId(), ad, currentJwtId);
+        Optional<User> buyerOptional = userRepository.findById(buyerId);
+        User buyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id: " + buyerId));
+        return getDialogResponse(buyer, ad, getDialogRequest);
     }
 
     private Dialog createDialog(Ad ad, User user) {
@@ -90,32 +87,22 @@ public class DialogService {
     public MessageResponse sendMessage(int senderId, MessageRequest messageRequest) {
         int adId = messageRequest.getAdId();
         Optional<Ad> adOptional = adRepository.findById(adId);
-        if (adOptional.isPresent()) {
-            Ad ad = adOptional.get();
-            Optional<User> userOptional = userRepository.findById(senderId);
-            Optional<Profile> profileOptional = profileRepository.findByUserId(senderId);
-            if (userOptional.isPresent() && profileOptional.isPresent()) {
-                User sender = userOptional.get();
-                Dialog dialog = new Dialog();
-                User buyer = new User();
-                int buyerId = getCurrentBuyerId(messageRequest.getBuyerId(), ad, senderId);
-                if (buyerId == 0) return null; //throw exception
-                if (buyerId != senderId) {
-                    Optional<User> buyerOptional = userRepository.findById(buyerId);
-                    if (buyerOptional.isPresent()) {
-                        User currentBuyer = buyerOptional.get();
-                        dialog = dialogRepository.findByAdAndBuyer(adId, buyerId).orElseGet(() -> createDialog(ad, currentBuyer));
-                        buyer = currentBuyer;
-                    }
-                } else {
-                    dialog = dialogRepository.findByAdAndBuyer(adId, senderId).orElseGet(() -> createDialog(ad, sender));
-                    buyer = sender;
-                }
-                Message message = mapperDto.messageRequestToEntity(messageRequest, sender, dialog);
-                message = messageRepository.createAndGet(message);
-                return mapperDto.messageToResponse(message, profileOptional.get());
-            }
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        Optional<User> userOptional = userRepository.findById(senderId);
+        User sender = userOptional.orElseThrow(() -> new EntityNotFoundException("not found sender with id " + senderId));
+        Optional<Profile> profileOptional = profileRepository.findByUserId(senderId);
+        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id " + senderId));
+        Dialog dialog;
+        int buyerId = getCurrentBuyerId(messageRequest.getBuyerId(), ad, senderId);
+        if (buyerId != senderId) {
+            Optional<User> buyerOptional = userRepository.findById(buyerId);
+            User currentBuyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id "+buyerId));
+            dialog = dialogRepository.findByAdAndBuyer(adId, buyerId).orElseGet(() -> createDialog(ad, currentBuyer));
+        } else {
+            dialog = dialogRepository.findByAdAndBuyer(adId, senderId).orElseGet(() -> createDialog(ad, sender));
         }
-        return null;
+        Message message = mapperDto.messageRequestToEntity(messageRequest, sender, dialog);
+        message = messageRepository.createAndGet(message);
+        return mapperDto.messageToResponse(message, profileOptional.get());
     }
 }
