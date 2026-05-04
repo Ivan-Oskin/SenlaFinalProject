@@ -4,6 +4,7 @@ import com.oskin.ad_board.dto.request.DealRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.DealResponse;
 import com.oskin.ad_board.exception.IdMatchException;
+import com.oskin.ad_board.exception.StatusNoValidException;
 import com.oskin.ad_board.model.*;
 import com.oskin.ad_board.repository.AdRepository;
 import com.oskin.ad_board.repository.DealRepository;
@@ -48,23 +49,27 @@ public class DealService {
     @Transactional
     public BooleanResponse save(DealRequest dealRequest, int sellerId) {
         Optional<User> sellerOptional = userRepository.findById(sellerId);
-        User seller = sellerOptional.orElseThrow(() -> new EntityNotFoundException("not found seller with id " + sellerId));
+        User seller = sellerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + sellerId));
         Optional<Ad> adOptional = adRepository.findById(dealRequest.getAdId());
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + dealRequest.getAdId()));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + dealRequest.getAdId()));
         Optional<User> buyerOptional = userRepository.findById(dealRequest.getBuyerId());
-        User buyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found buyer with id " + dealRequest.getBuyerId()));
+        User buyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + dealRequest.getBuyerId()));
         if(seller.getId() == buyer.getId()) {
             throw new IdMatchException("the buyer and seller have the same ID");
         }
-        if (ad.getSeller().getId() == seller.getId() && ad.getStatus() == StatusAd.ACTIVE) {
-            ad.setStatus(StatusAd.RESERVED);
-            Deal deal = new Deal(ad, buyer, StatusDeal.CREATED);
-            if (adRepository.update(ad) && dealRepository.create(deal)) {
-                return new BooleanResponse(true);
-            } else {
-                return new BooleanResponse(false);
-            }
-        } else throw new IdMatchException("the user's ID does not match the seller's ID");
+        if (ad.getSeller().getId() != seller.getId()) {
+            throw new IdMatchException("the user's ID does not match the seller's ID");
+        }
+        if(ad.getStatus() != StatusAd.ACTIVE) {
+            throw new StatusNoValidException("status ad is not active");
+        }
+        ad.setStatus(StatusAd.RESERVED);
+        Deal deal = new Deal(ad, buyer, StatusDeal.CREATED);
+        if (adRepository.update(ad) && dealRepository.create(deal)) {
+            return new BooleanResponse(true);
+        } else {
+            return new BooleanResponse(false);
+        }
     }
 
     @Transactional
@@ -125,7 +130,6 @@ public class DealService {
             ad.setStatus(statusAd);
             deal.setStatus(statusDeal);
             return (adRepository.update(ad) && dealRepository.update(deal));
-        }
-        return false;
+        } else throw new StatusNoValidException("for the "+statusDeal.name()+" status, the transaction status must be "+verifyStatusDeal.name());
     }
 }
