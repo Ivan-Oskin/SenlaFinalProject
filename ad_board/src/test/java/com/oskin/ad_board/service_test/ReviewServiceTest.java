@@ -7,11 +7,9 @@ import com.oskin.ad_board.dto.response.PaginationReviewResponse;
 import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.exception.IdMatchException;
 import com.oskin.ad_board.exception.PaginationRequestException;
-import com.oskin.ad_board.model.Ad;
-import com.oskin.ad_board.model.Review;
-import com.oskin.ad_board.model.ReviewSortType;
-import com.oskin.ad_board.model.User;
+import com.oskin.ad_board.model.*;
 import com.oskin.ad_board.repository.AdRepository;
+import com.oskin.ad_board.repository.ProfileRepository;
 import com.oskin.ad_board.repository.ReviewRepository;
 import com.oskin.ad_board.repository.UserRepository;
 import com.oskin.ad_board.service.ReviewService;
@@ -25,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.parameters.P;
 
 import java.util.*;
 
@@ -43,10 +42,13 @@ public class ReviewServiceTest {
     private AdRepository adRepository;
     @Mock
     private MapperDto mapperDto;
+    @Mock
+    private ProfileRepository profileRepository;
 
     @Test
     public void save_WhenValidRequest_ShouldReturnTrue() {
         Mockito.when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
+        Mockito.when(profileRepository.findByUserId(anyInt())).thenReturn(Optional.of(new Profile()));
         Mockito.when(adRepository.findById(anyInt())).thenReturn(Optional.of(new Ad()));
         Review review = new Review();
         Mockito.when(mapperDto.reviewRequestToEntity(any(), any(), any())).thenReturn(review);
@@ -66,10 +68,20 @@ public class ReviewServiceTest {
     @Test
     public void save_WhenNoFoundAd_ShouldThrowException() {
         Mockito.when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
+        Mockito.when(profileRepository.findByUserId(anyInt())).thenReturn(Optional.of(new Profile()));
         Mockito.when(adRepository.findById(anyInt())).thenReturn(Optional.empty());
         Exception exception = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> reviewService.save(new ReviewRequest(), 1, 1));
         Assertions.assertEquals("not found ad with id = 1", exception.getMessage());
+    }
+
+    @Test
+    public void save_WhenNoFoundProfile_ShouldThrowException() {
+        Mockito.when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
+        Mockito.when(profileRepository.findByUserId(anyInt())).thenReturn(Optional.empty());
+        Exception exception = Assertions.assertThrows(EntityNotFoundException.class,
+                () -> reviewService.save(new ReviewRequest(), 1, 1));
+        Assertions.assertEquals("not found profile with user id = 1", exception.getMessage());
     }
 
     @Test

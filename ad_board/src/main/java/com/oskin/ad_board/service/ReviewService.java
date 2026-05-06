@@ -7,11 +7,9 @@ import com.oskin.ad_board.dto.response.PaginationReviewResponse;
 import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.exception.IdMatchException;
 import com.oskin.ad_board.exception.PaginationRequestException;
-import com.oskin.ad_board.model.Ad;
-import com.oskin.ad_board.model.Review;
-import com.oskin.ad_board.model.ReviewSortType;
-import com.oskin.ad_board.model.User;
+import com.oskin.ad_board.model.*;
 import com.oskin.ad_board.repository.AdRepository;
+import com.oskin.ad_board.repository.ProfileRepository;
 import com.oskin.ad_board.repository.ReviewRepository;
 import com.oskin.ad_board.repository.UserRepository;
 import com.oskin.ad_board.utils.MapperDto;
@@ -30,24 +28,31 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final AdRepository adRepository;
     private final MapperDto mapperDto;
+    private final ProfileRepository profileRepository;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, AdRepository adRepository, MapperDto mapperDto) {
+    public ReviewService(ReviewRepository reviewRepository,
+                         UserRepository userRepository,
+                         AdRepository adRepository,
+                         MapperDto mapperDto,
+                         ProfileRepository profileRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.adRepository = adRepository;
         this.mapperDto = mapperDto;
+        this.profileRepository = profileRepository;
     }
 
     @Transactional
     public BooleanResponse save(ReviewRequest reviewRequest, int adId, int authorId) {
         Optional<User> userOptional = userRepository.findById(authorId);
         User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + authorId));
+        Optional<Profile> profileOptional = profileRepository.findByUserId(authorId);
+        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id = " + authorId));
         Optional<Ad> adOptional = adRepository.findById(adId);
         Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(), userOptional.get());
         return new BooleanResponse(reviewRepository.create(review));
-
     }
 
     @Transactional
