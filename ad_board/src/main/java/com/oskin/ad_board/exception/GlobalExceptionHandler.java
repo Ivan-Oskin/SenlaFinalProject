@@ -64,8 +64,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomExceptionResponse> handlerGlobalException(Exception e) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        CustomExceptionResponse customExceptionResponse = new CustomExceptionResponse(status.value(), "An unexpected error has occurred");
+        HttpStatus status = HttpStatus.UNPROCESSABLE_CONTENT;
+        CustomExceptionResponse customExceptionResponse = new CustomExceptionResponse(status.value(), e.getMessage());
         return new ResponseEntity<>(customExceptionResponse, buildHeaders(), status);
     }
 }
