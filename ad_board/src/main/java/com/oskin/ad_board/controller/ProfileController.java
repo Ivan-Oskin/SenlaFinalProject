@@ -26,22 +26,21 @@ public class ProfileController {
         return profileService.findById(id);
     }
 
-    @GetMapping
-    public ProfileResponse findByUserId() {
-        int userId = jwtUtils.getCurrentId();
+    @GetMapping("/user/{id}")
+    public ProfileResponse findByUserId(@PathVariable("id") int userId) {
         return profileService.findByUserId(userId);
     }
 
     @PostMapping
     public BooleanResponse createProfile(@RequestBody @Valid ProfileRequest profileRequest) {
-        int idUser = jwtUtils.getCurrentId();
-        return profileService.save(profileRequest, idUser);
+        int userId = jwtUtils.getCurrentId();
+        return profileService.save(profileRequest, userId);
     }
 
     @PutMapping
     public BooleanResponse updateProfileByUser(@RequestBody @Valid ProfileRequest profileRequest) {
-        int idUser = jwtUtils.getCurrentId();
-        return profileService.update(profileRequest, idUser);
+        int userId = jwtUtils.getCurrentId();
+        return profileService.update(profileRequest, userId);
     }
 
     @DeleteMapping

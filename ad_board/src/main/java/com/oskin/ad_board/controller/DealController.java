@@ -37,7 +37,7 @@ public class DealController {
         return dealService.getHistorySellByUser(userId);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public BooleanResponse createDeal(@RequestBody @Valid DealRequest dealRequest) {
         int userId = jwtUtils.getCurrentId();
         return dealService.save(dealRequest, userId);

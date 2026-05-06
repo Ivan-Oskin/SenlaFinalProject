@@ -23,7 +23,7 @@ public class ModerationController {
         return adService.payAd(id);
     }
 
-    @PutMapping("/Remove_paid/{id}")
+    @PutMapping("/remove_paid/{id}")
     public BooleanResponse removePayAd(@PathVariable("id") int id) {
         return adService.removePaidAd(id);
     }

@@ -38,7 +38,7 @@ public class UserController {
             String token = jwtUtils.generateToken(userDetails);
             return new JwtResponse(token);
         } else {
-            return null;
+            throw new RuntimeException();
         }
     }
 
