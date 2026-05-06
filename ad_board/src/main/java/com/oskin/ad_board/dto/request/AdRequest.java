@@ -7,7 +7,7 @@ public class AdRequest {
     String title;
     @Min(value = 0, message = "the price should be positive or null")
     int price;
-    @Size(max= 2000,message="the description cannot exceed 2000 characters")
+    @Size(max = 2000, message = "the description cannot exceed 2000 characters")
     String description;
     @NotEmpty(message = "The ad must have a city")
     String city;

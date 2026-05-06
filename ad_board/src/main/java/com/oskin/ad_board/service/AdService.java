@@ -112,7 +112,7 @@ public class AdService {
         Optional<Ad> adOptional = adRepository.findById(adId);
         Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         if (ad.getSeller().getId() == sellerId) {
-            if(ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
+            if (ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
                 ad.setStatus(StatusAd.MODERATION);
                 return new BooleanResponse(adRepository.update(ad));
             } else throw new StatusNoValidException("ad have status COMPLETED or RESERVED");
@@ -126,7 +126,7 @@ public class AdService {
         Optional<Ad> adOptional = adRepository.findById(adId);
         Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         if (ad.getSeller().getId() == sellerId) {
-            if(ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
+            if (ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
                 ad.setStatus(StatusAd.ARCHIVED);
                 return new BooleanResponse(adRepository.update(ad));
             } else throw new StatusNoValidException("ad have status COMPLETED or RESERVED");

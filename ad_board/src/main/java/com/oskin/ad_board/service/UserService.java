@@ -17,6 +17,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -27,7 +28,7 @@ public class UserService {
     public BooleanResponse save(UserRequest userRequest) {
         String mail = userRequest.getMail();
         Optional<User> userOptional = userRepository.findByMail(mail);
-        if(userOptional.isPresent()) {
+        if (userOptional.isPresent()) {
             throw new EntityExistsException("User already exists with mail = " + mail);
         }
         String password = passwordEncoder.encode(userRequest.getPassword());

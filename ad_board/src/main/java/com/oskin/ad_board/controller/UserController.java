@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping("/reg")
     public JwtResponse save(@RequestBody @Valid UserRequest userRequest) {
         BooleanResponse booleanResponse = userService.save(userRequest);
-        if(booleanResponse.isBool()) {
+        if (booleanResponse.isBool()) {
             UserDetails userDetails = userDetailService.loadUserByUsername(userRequest.getMail());
             String token = jwtUtils.generateToken(userDetails);
             return new JwtResponse(token);

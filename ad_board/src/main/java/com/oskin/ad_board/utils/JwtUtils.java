@@ -20,6 +20,7 @@ import java.util.Map;
 @Component
 public class JwtUtils {
     private final Config config;
+
     @Autowired
     public JwtUtils(Config config) {
         this.config = config;
