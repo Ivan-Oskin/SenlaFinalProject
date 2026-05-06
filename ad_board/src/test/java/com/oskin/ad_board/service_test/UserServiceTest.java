@@ -2,14 +2,10 @@ package com.oskin.ad_board.service_test;
 
 import com.oskin.ad_board.dto.request.UserRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
-import com.oskin.ad_board.exception.IdMatchException;
-import com.oskin.ad_board.model.Review;
-import com.oskin.ad_board.model.Role;
 import com.oskin.ad_board.model.User;
 import com.oskin.ad_board.repository.UserRepository;
 import com.oskin.ad_board.service.UserService;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +19,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
-@ExtendWith(MockitoExtension .class)
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
     @InjectMocks

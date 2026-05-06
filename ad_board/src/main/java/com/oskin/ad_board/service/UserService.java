@@ -28,7 +28,7 @@ public class UserService {
         String mail = userRequest.getMail();
         Optional<User> userOptional = userRepository.findByMail(mail);
         if(userOptional.isPresent()) {
-            throw new EntityExistsException("User already exists with mail = "+mail);
+            throw new EntityExistsException("User already exists with mail = " + mail);
         }
         String password = passwordEncoder.encode(userRequest.getPassword());
         Role role = new Role();

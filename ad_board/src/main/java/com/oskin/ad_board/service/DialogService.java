@@ -96,7 +96,7 @@ public class DialogService {
         int buyerId = getCurrentBuyerId(messageRequest.getBuyerId(), ad, senderId);
         if (buyerId != senderId) {
             Optional<User> buyerOptional = userRepository.findById(buyerId);
-            User currentBuyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = "+buyerId));
+            User currentBuyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + buyerId));
             dialog = dialogRepository.findByAdAndBuyer(adId, buyerId).orElseGet(() -> createDialog(ad, currentBuyer));
         } else {
             dialog = dialogRepository.findByAdAndBuyer(adId, senderId).orElseGet(() -> createDialog(ad, sender));
