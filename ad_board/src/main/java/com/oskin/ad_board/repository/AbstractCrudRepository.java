@@ -1,15 +1,11 @@
 package com.oskin.ad_board.repository;
 
-import com.oskin.ad_board.model.Dialog;
 import com.oskin.ad_board.model.IIdentified;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 

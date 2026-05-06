@@ -28,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/auth",
             "/reg"
     );
+
     @Autowired
     public JwtFilter(JwtUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
@@ -37,7 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         String method = request.getMethod();
-        if(method.equals("GET") && (path.startsWith("/ad") || path.startsWith("/profile") || path.startsWith("/review"))) {
+        if (method.equals("GET") && (path.startsWith("/ad") || path.startsWith("/profile") || path.startsWith("/review"))) {
             return true;
         }
         return permitAllPaths.stream().anyMatch(path::equals);
@@ -46,8 +47,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        String id = null;
-        String jwt = null;
+        String id;
+        String jwt;
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
@@ -55,12 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
             jwt = authHeader.substring(7);
             try {
                 id = jwtUtils.getId(jwt);
-            } catch (MalformedJwtException | SignatureException e) {
-                response.setStatus(401);
-                response.setContentType("application/json");
-                response.getWriter().write(mapper.writeValueAsString(e.getMessage()));
-                return;
-            } catch (ExpiredJwtException e) {
+            } catch (MalformedJwtException | SignatureException | ExpiredJwtException e) {
                 response.setStatus(401);
                 response.setContentType("application/json");
                 response.getWriter().write(mapper.writeValueAsString(e.getMessage()));

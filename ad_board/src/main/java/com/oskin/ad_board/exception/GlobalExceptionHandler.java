@@ -1,5 +1,6 @@
 package com.oskin.ad_board.exception;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.stream.LangCollectors.collect;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -53,6 +52,13 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         CustomExceptionResponse customExceptionResponse = new CustomExceptionResponse(status.value(), messages);
+        return new ResponseEntity<>(customExceptionResponse, buildHeaders(), status);
+    }
+
+    @ExceptionHandler(EntityExistsException.class)
+    public ResponseEntity<CustomExceptionResponse> handlerEntityExistsExceptionException(EntityExistsException e) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        CustomExceptionResponse customExceptionResponse = new CustomExceptionResponse(status.value(), e.getMessage());
         return new ResponseEntity<>(customExceptionResponse, buildHeaders(), status);
     }
 

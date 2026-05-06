@@ -17,15 +17,8 @@ public class Config {
         return secret;
     }
 
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
     public Long getLifetime() {
         return lifetime;
     }
 
-    public void setLifetime(Long lifetime) {
-        this.lifetime = lifetime;
-    }
 }

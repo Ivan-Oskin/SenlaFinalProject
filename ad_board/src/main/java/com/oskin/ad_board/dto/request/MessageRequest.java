@@ -1,10 +1,10 @@
 package com.oskin.ad_board.dto.request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class MessageRequest {
-    @NotNull(message = "The message must have a adId")
+    @Min(value = 1, message = "the ad id must be more than 1")
     int adId;
     int buyerId;
     @NotBlank(message = "the message cannot be empty")

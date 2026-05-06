@@ -52,11 +52,11 @@ public class AdService {
     public BooleanResponse save(AdRequest adRequest, int sellerId) {
         String cityName = adRequest.getCityLowerCase();
         Optional<User> userOptional = userRepository.findById(sellerId);
-        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id " + sellerId));
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + sellerId));
         Optional<Profile> profileOptional = profileRepository.findByUserId(sellerId);
-        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id" + sellerId));
+        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id = " + sellerId));
         Optional<City> cityOptional = cityRepository.findByName(cityName);
-        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name " + cityName));
+        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name = " + adRequest.getCity()));
         Ad ad = mapperDto.adRequestToEntity(adRequest, user, city);
         ad.setStatus(StatusAd.DRAFT);
         return new BooleanResponse(adRepository.create(ad));
@@ -65,9 +65,9 @@ public class AdService {
     @Transactional
     public BooleanResponse update(AdRequest adRequest, int adId, int sellerId) {
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         Optional<City> cityOptional = cityRepository.findByName(adRequest.getCityLowerCase());
-        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name " + adRequest.getCity()));
+        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name = " + adRequest.getCity()));
         if (ad.getSeller().getId() != sellerId) {
             throw new IdMatchException("the user's ID does not match the seller's ID");
         }
@@ -86,16 +86,15 @@ public class AdService {
     @Transactional
     public BooleanResponse delete(int adId, int sellerId) {
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         if (ad.getSeller().getId() == sellerId) {
             return new BooleanResponse(adRepository.delete(ad));
         } else throw new IdMatchException("the user's ID does not match the seller's ID");
-
     }
 
     public AdResponse findById(int id) {
         Optional<Ad> adOptional = adRepository.findById(id);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + id));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + id));
         return mapperDto.adToResponse(ad);
     }
 
@@ -109,51 +108,55 @@ public class AdService {
     @Transactional
     public BooleanResponse publishBySeller(int adId, int sellerId) {
         Optional<User> userOptional = userRepository.findById(sellerId);
-        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id " + sellerId));
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + sellerId));
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
-        if (ad.getSeller().getId() == user.getId()) {
-            ad.setStatus(StatusAd.MODERATION);
-            return new BooleanResponse(adRepository.update(ad));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
+        if (ad.getSeller().getId() == sellerId) {
+            if (ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
+                ad.setStatus(StatusAd.MODERATION);
+                return new BooleanResponse(adRepository.update(ad));
+            } else throw new StatusNoValidException("ad have status COMPLETED or RESERVED");
         } else throw new IdMatchException("the user's ID does not match the seller's ID");
     }
 
     @Transactional
     public BooleanResponse archiveBySeller(int adId, int sellerId) {
         Optional<User> userOptional = userRepository.findById(sellerId);
-        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id " + sellerId));
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + sellerId));
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
-        if (ad.getSeller().getId() == user.getId()) {
-            ad.setStatus(StatusAd.ARCHIVED);
-            return new BooleanResponse(adRepository.update(ad));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
+        if (ad.getSeller().getId() == sellerId) {
+            if (ad.getStatus() != StatusAd.COMPLETED && ad.getStatus() != StatusAd.RESERVED) {
+                ad.setStatus(StatusAd.ARCHIVED);
+                return new BooleanResponse(adRepository.update(ad));
+            } else throw new StatusNoValidException("ad have status COMPLETED or RESERVED");
         } else throw new IdMatchException("the user's ID does not match the seller's ID");
     }
 
     @Transactional
     public BooleanResponse publishAdByModeration(int adId) {
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
-        if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.HIDDEN) {
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
+        if (ad.getStatus() == StatusAd.MODERATION) {
             ad.setStatus(StatusAd.ACTIVE);
             return new BooleanResponse(adRepository.update(ad));
-        } else throw new IdMatchException("ad haven't status MODERATION or HIDDEN");
+        } else throw new StatusNoValidException("ad haven't status MODERATION or HIDDEN");
     }
 
     @Transactional
     public BooleanResponse hideAdByModeration(int adId) {
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         if (ad.getStatus() == StatusAd.MODERATION || ad.getStatus() == StatusAd.ACTIVE) {
             ad.setStatus(StatusAd.HIDDEN);
             return new BooleanResponse(adRepository.update(ad));
-        } else throw new IdMatchException("ad haven't status MODERATION or ACTIVE");
+        } else throw new StatusNoValidException("ad haven't status MODERATION or ACTIVE");
     }
 
     @Transactional
     public BooleanResponse payAd(int adId) {
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         ad.setPaid(true);
         return new BooleanResponse(adRepository.update(ad));
     }
@@ -161,7 +164,7 @@ public class AdService {
     @Transactional
     public BooleanResponse removePaidAd(int adId) {
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         ad.setPaid(false);
         return new BooleanResponse(adRepository.update(ad));
     }

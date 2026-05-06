@@ -40,9 +40,9 @@ public class ProfileService {
             throw new EntityExistsException("Profile already exists with user id " + userId);
         }
         Optional<User> userOptional = userRepository.findById(userId);
-        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id " + userId));
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + userId));
         Optional<City> cityOptional = cityRepository.findByName(profileRequest.getCityLowerCase());
-        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name " + profileRequest.getCity()));
+        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name = " + profileRequest.getCity()));
         Profile profile = mapperDto.profileRequestToEntity(profileRequest, user, city);
         return new BooleanResponse(profileRepository.create(profile));
     }
@@ -50,9 +50,9 @@ public class ProfileService {
     @Transactional
     public BooleanResponse update(ProfileRequest profileRequest, int userId) {
         Optional<Profile> profileOptional = profileRepository.findByUserId(userId);
-        Profile profile = profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id " + userId));
+        Profile profile = profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id = " + userId));
         Optional<City> cityOptional = cityRepository.findByName(profileRequest.getCityLowerCase());
-        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name " + profileRequest.getCity()));
+        City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name = " + profileRequest.getCity()));
         profile.setName(profileRequest.getName());
         profile.setSurname(profileRequest.getSurname());
         profile.setCity(city);
@@ -65,7 +65,6 @@ public class ProfileService {
         Optional<Profile> profileOptional = profileRepository.findByUserId(userId);
         Profile profile = profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id " + userId));
         return new BooleanResponse(profileRepository.delete(profile));
-
     }
 
     public ProfileResponse findById(int id) {

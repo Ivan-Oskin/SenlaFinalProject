@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class CityRepository extends AbstractCrudRepository<City>{
+public class CityRepository extends AbstractCrudRepository<City> {
     @PersistenceContext
     EntityManager entityManager;
     private final Logger log = LoggerFactory.getLogger(CityRepository.class);

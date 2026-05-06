@@ -9,7 +9,6 @@ import com.oskin.ad_board.model.*;
 import jakarta.persistence.Tuple;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -126,8 +125,8 @@ public class MapperDto {
     public DialogResponse dialogToResponse(Dialog dialog, List<MessageResponse> messageResponses) {
         DialogResponse dialogResponse = new DialogResponse();
         int lastId = 0;
-        if(!messageResponses.isEmpty()) {
-            lastId = messageResponses.get(messageResponses.size()-1).getId();
+        if (!messageResponses.isEmpty()) {
+            lastId = messageResponses.get(messageResponses.size() - 1).getId();
         }
         dialogResponse.setAdTitle(dialog.getAd().getTitle());
         dialogResponse.setList(messageResponses);
@@ -146,7 +145,7 @@ public class MapperDto {
     public PaginationReviewResponse ReviewsToPaginationResponse(List<ReviewResponse> list) {
         PaginationReviewResponse paginationReviewResponse = new PaginationReviewResponse();
         paginationReviewResponse.setList(list);
-        if(!list.isEmpty()) {
+        if (!list.isEmpty()) {
             ReviewResponse lastReviewResponse = list.get(list.size() - 1);
             paginationReviewResponse.setLastId(lastReviewResponse.getId());
             paginationReviewResponse.setLastDateTime(lastReviewResponse.getCreatedDateTime());
@@ -169,7 +168,7 @@ public class MapperDto {
     public PaginationAdModerationResponse adToModerationPaginationResponse(List<AdResponse> list) {
         PaginationAdModerationResponse paginationAdResponse = new PaginationAdModerationResponse();
         int lastId;
-        if(!list.isEmpty()) {
+        if (!list.isEmpty()) {
             lastId = list.get(list.size() - 1).getId();
         } else {
             lastId = 0;

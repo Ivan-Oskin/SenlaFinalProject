@@ -56,10 +56,10 @@ public class DialogService {
     public DialogResponse getDialog(int currentJwtId, GetDialogRequest getDialogRequest) {
         int adId = getDialogRequest.getAdId();
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id: " + adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         int buyerId = getCurrentBuyerId(getDialogRequest.getBuyerId(), ad, currentJwtId);
         Optional<User> buyerOptional = userRepository.findById(buyerId);
-        User buyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id: " + buyerId));
+        User buyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + buyerId));
         return getDialogResponse(buyer, ad, getDialogRequest);
     }
 
@@ -87,16 +87,16 @@ public class DialogService {
     public MessageResponse sendMessage(int senderId, MessageRequest messageRequest) {
         int adId = messageRequest.getAdId();
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id " + adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         Optional<User> userOptional = userRepository.findById(senderId);
-        User sender = userOptional.orElseThrow(() -> new EntityNotFoundException("not found sender with id " + senderId));
+        User sender = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + senderId));
         Optional<Profile> profileOptional = profileRepository.findByUserId(senderId);
-        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id " + senderId));
+        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id = " + senderId));
         Dialog dialog;
         int buyerId = getCurrentBuyerId(messageRequest.getBuyerId(), ad, senderId);
         if (buyerId != senderId) {
             Optional<User> buyerOptional = userRepository.findById(buyerId);
-            User currentBuyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id "+buyerId));
+            User currentBuyer = buyerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + buyerId));
             dialog = dialogRepository.findByAdAndBuyer(adId, buyerId).orElseGet(() -> createDialog(ad, currentBuyer));
         } else {
             dialog = dialogRepository.findByAdAndBuyer(adId, senderId).orElseGet(() -> createDialog(ad, sender));

@@ -1,10 +1,12 @@
 package com.oskin.ad_board.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+
+import jakarta.validation.constraints.Min;
 
 public class DealRequest {
-    @NotNull(message = "The deal must have a adId")
+    @Min(value = 1, message = "the ad id must be more than 1")
     int adId;
+    @Min(value = 1, message = "the buyer id must be more than 1")
     int buyerId;
 
     public int getAdId() {

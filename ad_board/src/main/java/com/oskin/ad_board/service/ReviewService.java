@@ -42,9 +42,9 @@ public class ReviewService {
     @Transactional
     public BooleanResponse save(ReviewRequest reviewRequest, int adId, int authorId) {
         Optional<User> userOptional = userRepository.findById(authorId);
-        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("no found user with id = "+ authorId));
+        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + authorId));
         Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("no found ad with id "+ adId));
+        Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(), userOptional.get());
         return new BooleanResponse(reviewRepository.create(review));
 
@@ -53,15 +53,15 @@ public class ReviewService {
     @Transactional
     public BooleanResponse delete(int reviewId, int authorId) {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
-        Review review = reviewOptional.orElseThrow(() -> new EntityNotFoundException("no found review with id " + reviewId));
-            if (review.getAuthor().getId() == authorId) {
-                return new BooleanResponse(reviewRepository.delete(review));
-            } else throw new IdMatchException("the user's ID does not match the review's ID");
+        Review review = reviewOptional.orElseThrow(() -> new EntityNotFoundException("not found review with id = " + reviewId));
+        if (review.getAuthor().getId() == authorId) {
+            return new BooleanResponse(reviewRepository.delete(review));
+        } else throw new IdMatchException("the user's ID does not match the review's ID");
     }
 
     public PaginationReviewResponse getReviewByAd(int adId, GetReviewRequest getReviewRequest) {
-        if(getReviewRequest.getLastId() > 0) {
-            if(getReviewRequest.getReviewSortType() == ReviewSortType.CREATED_DATE_TIME && getReviewRequest.getLastDateTime() == null) {
+        if (getReviewRequest.getLastId() > 0) {
+            if (getReviewRequest.getReviewSortType() == ReviewSortType.CREATED_DATE_TIME && getReviewRequest.getLastDateTime() == null) {
                 throw new PaginationRequestException("sort type = time, but last time = null");
             } else if (getReviewRequest.getReviewSortType() != ReviewSortType.CREATED_DATE_TIME && getReviewRequest.getLastRating() < 1) {
                 throw new PaginationRequestException("sort type = rating, but last rating = null");

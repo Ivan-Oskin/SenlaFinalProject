@@ -8,6 +8,7 @@ class AdBoardApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
