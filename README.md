@@ -1,4 +1,4 @@
-Ad board application
+## Ad board application
 
 ## Технологии
 
@@ -11,11 +11,11 @@ Ad board application
 
 ## Гайд по запуску
 
-1.скачать репозиторий с github,
-2.распаковать его в любом удобном месте
-3.в cmd перейти в папку ad_board скачанного репозитория -> cd путь_к_проекту\ad_board
-4.прописать docker compose build
-5.прописать docker compose up
+- скачать репозиторий с github,
+- распаковать его в любом удобном месте
+- в cmd перейти в папку ad_board скачанного репозитория -> cd путь_к_проекту\ad_board
+- прописать docker compose build
+- прописать docker compose up
 
 всё!
 
