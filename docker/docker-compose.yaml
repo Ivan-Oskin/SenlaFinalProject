@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16.8
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ad_board_admin
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: ad_board_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ad_board-network
+  app:
+    build:
+      context: ..
+      dockerfile: ad_board/Dockerfile
+    container_name: ad_board
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ad_board_db
+    networks:
+      - ad_board-network
+volumes:
+  postgres_data:
+networks:
+  ad_board-network:
+    driver: bridge
