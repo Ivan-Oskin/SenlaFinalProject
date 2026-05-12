@@ -5,6 +5,7 @@ import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.ProfileResponse;
 import com.oskin.ad_board.service.ProfileService;
 import com.oskin.ad_board.utils.JwtUtils;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +22,20 @@ public class ProfileController {
         this.jwtUtils = jwtUtils;
     }
 
-    @GetMapping("/{id}")
-    public ProfileResponse findById(@PathVariable("id") int id) {
-        return profileService.findById(id);
+    @GetMapping
+    public ProfileResponse getProfile() {
+        int userId = jwtUtils.getCurrentId();
+        return profileService.findByUserId(userId);
     }
 
+    @SecurityRequirements()
     @GetMapping("/user/{id}")
     public ProfileResponse findByUserId(@PathVariable("id") int userId) {
         return profileService.findByUserId(userId);
     }
 
     @PostMapping
-    public BooleanResponse createProfile(@RequestBody @Valid ProfileRequest profileRequest) {
+    public ProfileResponse createProfile(@RequestBody @Valid ProfileRequest profileRequest) {
         int userId = jwtUtils.getCurrentId();
         return profileService.save(profileRequest, userId);
     }

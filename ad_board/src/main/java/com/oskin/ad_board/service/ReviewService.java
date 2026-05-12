@@ -44,15 +44,15 @@ public class ReviewService {
     }
 
     @Transactional
-    public BooleanResponse save(ReviewRequest reviewRequest, int adId, int authorId) {
+    public ReviewResponse save(ReviewRequest reviewRequest, int adId, int authorId) {
         Optional<User> userOptional = userRepository.findById(authorId);
         User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + authorId));
         Optional<Profile> profileOptional = profileRepository.findByUserId(authorId);
-        profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id = " + authorId));
+        Profile profile = profileOptional.orElseThrow(() -> new EntityNotFoundException("not found profile with user id = " + authorId));
         Optional<Ad> adOptional = adRepository.findById(adId);
         Ad ad = adOptional.orElseThrow(() -> new EntityNotFoundException("not found ad with id = " + adId));
         Review review = mapperDto.reviewRequestToEntity(reviewRequest, adOptional.get(), userOptional.get());
-        return new BooleanResponse(reviewRepository.create(review));
+        return mapperDto.reviewToResponse(reviewRepository.createAndGet(review), profile);
     }
 
     @Transactional

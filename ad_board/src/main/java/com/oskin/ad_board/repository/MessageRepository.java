@@ -32,8 +32,8 @@ public class MessageRepository extends AbstractCrudRepository<Message> {
         int count = getDialogRequest.getCount();
         int lastId = getDialogRequest.getLastId();
         String hql = "select m as message, p.name as userName from Message m " +
-                "join fetch user u " +
-                "join fetch dialog d " +
+                "join fetch m.user u " +
+                "join fetch m.dialog d " +
                 "join Profile p on p.user.id = m.user.id " +
                 "where d.id = :id ";
         if (lastId > 0) {

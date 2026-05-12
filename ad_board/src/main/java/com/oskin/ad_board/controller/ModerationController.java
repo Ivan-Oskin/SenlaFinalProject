@@ -39,7 +39,7 @@ public class ModerationController {
     }
 
     @GetMapping
-    public PaginationAdModerationResponse getModerationList(@RequestBody @Valid GetAdToModeration getAdToModeration) {
+    public PaginationAdModerationResponse getModerationList(@ModelAttribute @Valid GetAdToModeration getAdToModeration) {
         return adService.getModerationList(getAdToModeration);
     }
 }

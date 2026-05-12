@@ -4,8 +4,8 @@ import jakarta.validation.constraints.Min;
 
 public class GetAdToModeration {
     @Min(value = 1, message = "the count must be more than 1")
-    int count;
-    int lastId;
+    private int count;
+    private int lastId;
 
     public int getCount() {
         return count;

@@ -3,8 +3,8 @@ package com.oskin.ad_board.dto.response;
 import java.util.List;
 
 public class PaginationAdModerationResponse {
-    int lastId;
-    List<AdResponse> adResponseList;
+    private int lastId;
+    private List<AdResponse> adResponseList;
 
     public int getLastId() {
         return lastId;

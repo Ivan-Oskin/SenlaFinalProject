@@ -1,16 +1,17 @@
 package com.oskin.ad_board.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 
 public class AdRequest {
     @NotBlank(message = "the title cannot be empty")
-    String title;
+    private String title;
     @Min(value = 0, message = "the price should be positive or null")
-    int price;
+    private int price;
     @Size(max = 2000, message = "the description cannot exceed 2000 characters")
-    String description;
+    private String description;
     @NotEmpty(message = "The ad must have a city")
-    String city;
+    private String city;
 
     public AdRequest() {
     }
@@ -27,6 +28,7 @@ public class AdRequest {
         return city;
     }
 
+    @JsonIgnore
     public String getCityLowerCase() {
         return city.toLowerCase();
     }

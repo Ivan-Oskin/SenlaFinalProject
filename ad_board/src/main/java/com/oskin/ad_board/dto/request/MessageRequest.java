@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public class MessageRequest {
     @Min(value = 1, message = "the ad id must be more than 1")
-    int adId;
-    int buyerId;
+    private int adId;
+    private int buyerId;
     @NotBlank(message = "the message cannot be empty")
-    String message;
+    private String message;
 
     public int getBuyerId() {
         return buyerId;

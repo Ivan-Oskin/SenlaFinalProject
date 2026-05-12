@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 public class ReviewResponse {
-    int id;
-    int authorId;
-    String authorName;
-    double rating;
-    String comment;
+    private int id;
+    private int authorId;
+    private String authorName;
+    private double rating;
+    private String comment;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime createdDateTime;
+    private LocalDateTime createdDateTime;
 
     public int getId() {
         return id;

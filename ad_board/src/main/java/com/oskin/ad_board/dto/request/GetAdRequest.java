@@ -58,6 +58,9 @@ public class GetAdRequest {
     }
 
     public AdSortType getAdSortType() {
+        if(adSortType == null) {
+            adSortType = AdSortType.DEFAULT;
+        }
         return adSortType;
     }
 

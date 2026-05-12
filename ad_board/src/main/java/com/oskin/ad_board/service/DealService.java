@@ -47,7 +47,7 @@ public class DealService {
     }
 
     @Transactional
-    public BooleanResponse save(DealRequest dealRequest, int sellerId) {
+    public DealResponse save(DealRequest dealRequest, int sellerId) {
         Optional<User> sellerOptional = userRepository.findById(sellerId);
         User seller = sellerOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + sellerId));
         Optional<Ad> adOptional = adRepository.findById(dealRequest.getAdId());
@@ -65,11 +65,8 @@ public class DealService {
         }
         ad.setStatus(StatusAd.RESERVED);
         Deal deal = new Deal(ad, buyer, StatusDeal.CREATED);
-        if (adRepository.update(ad) && dealRepository.create(deal)) {
-            return new BooleanResponse(true);
-        } else {
-            return new BooleanResponse(false);
-        }
+        adRepository.update(ad);
+        return mapperDto.dealToResponse(dealRepository.createAndGet(deal));
     }
 
     @Transactional

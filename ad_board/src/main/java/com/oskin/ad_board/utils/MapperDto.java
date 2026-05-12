@@ -26,6 +26,7 @@ public class MapperDto {
 
     public AdResponse adToResponse(Ad ad) {
         AdResponse adResponse = new AdResponse();
+        adResponse.setPaid(ad.isPaid());
         adResponse.setId(ad.getId());
         adResponse.setDescription(ad.getDescription());
         adResponse.setTitle(ad.getTitle());
@@ -80,6 +81,7 @@ public class MapperDto {
 
     public DealResponse dealToResponse(Deal deal) {
         DealResponse dealResponse = new DealResponse();
+        dealResponse.setStatusDeal(deal.getStatus());
         dealResponse.setAdId(deal.getAd().getId());
         dealResponse.setAdTitle(deal.getAd().getTitle());
         dealResponse.setBuyerId(deal.getBuyer().getId());
@@ -98,6 +100,17 @@ public class MapperDto {
         reviewResponse.setComment(review.getComment());
         reviewResponse.setCreatedDateTime(review.getCreatedDateTime());
         reviewResponse.setRating(review.getRating());
+        return reviewResponse;
+    }
+
+    public ReviewResponse reviewToResponse(Review review, Profile profile) {
+        ReviewResponse reviewResponse = new ReviewResponse();
+        reviewResponse.setAuthorId(review.getAuthor().getId());
+        reviewResponse.setAuthorName(profile.getName());
+        reviewResponse.setRating(review.getRating());
+        reviewResponse.setId(review.getId());
+        reviewResponse.setComment(review.getComment());
+        reviewResponse.setCreatedDateTime(review.getCreatedDateTime());
         return reviewResponse;
     }
 

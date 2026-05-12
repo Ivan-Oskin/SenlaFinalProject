@@ -4,11 +4,11 @@ import jakarta.validation.constraints.Min;
 
 public class GetDialogRequest {
     @Min(value = 1, message = "The ad id must be more than 1")
-    int adId;
-    int buyerId;
+    private int adId;
+    private int buyerId;
     @Min(value = 1, message = "the count must be more than 1")
-    int count;
-    int lastId;
+    private int count;
+    private int lastId;
 
     public GetDialogRequest() {
     }

@@ -6,12 +6,22 @@ import com.oskin.ad_board.model.StatusAd;
 import java.time.LocalDateTime;
 
 public class AdResponse {
-    int id;
-    String title;
-    int price;
-    String description;
-    int seller_id;
-    String city;
+    private int id;
+    private String title;
+    private int price;
+    private String description;
+    private int seller_id;
+    private String city;
+    private boolean paid;
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdDateTime;
     StatusAd statusAd;

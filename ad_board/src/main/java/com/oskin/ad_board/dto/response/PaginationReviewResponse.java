@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class PaginationReviewResponse {
-    List<ReviewResponse> list;
-    int lastId;
-    double lastRating;
+    private List<ReviewResponse> list;
+    private int lastId;
+    private double lastRating;
 
     public PaginationReviewResponse() {
     }

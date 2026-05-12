@@ -7,6 +7,7 @@ import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.PaginationAdResponse;
 import com.oskin.ad_board.service.AdService;
 import com.oskin.ad_board.utils.JwtUtils;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,18 +24,20 @@ public class AdController {
         this.jwtUtils = jwtUtils;
     }
 
+    @SecurityRequirements()
     @GetMapping("{id}")
     public AdResponse findById(@PathVariable("id") int id) {
         return adService.findById(id);
     }
 
+    @SecurityRequirements()
     @GetMapping
-    public PaginationAdResponse findByTitle(@RequestBody @Valid GetAdRequest getAdRequest) {
+    public PaginationAdResponse findByTitle(@ModelAttribute @Valid GetAdRequest getAdRequest) {
         return adService.findByTitle(getAdRequest);
     }
 
     @PostMapping
-    public BooleanResponse addNewAdd(@RequestBody @Valid AdRequest adRequest) {
+    public AdResponse addNewAdd(@RequestBody @Valid AdRequest adRequest) {
         int idSeller = jwtUtils.getCurrentId();
         return adService.save(adRequest, idSeller);
     }

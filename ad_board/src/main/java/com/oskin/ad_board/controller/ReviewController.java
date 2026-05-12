@@ -4,8 +4,10 @@ import com.oskin.ad_board.dto.request.GetReviewRequest;
 import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.PaginationReviewResponse;
+import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.service.ReviewService;
 import com.oskin.ad_board.utils.JwtUtils;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,7 @@ public class ReviewController {
     }
 
     @PostMapping("/{ad_id}")
-    public BooleanResponse createReview(@PathVariable("ad_id") int adId, @RequestBody @Valid ReviewRequest reviewRequest) {
+    public ReviewResponse createReview(@PathVariable("ad_id") int adId, @RequestBody @Valid ReviewRequest reviewRequest) {
         int authorId = jwtUtils.getCurrentId();
         return reviewService.save(reviewRequest, adId, authorId);
     }
@@ -34,8 +36,9 @@ public class ReviewController {
         return reviewService.delete(commentId, authorId);
     }
 
+    @SecurityRequirements()
     @GetMapping("/{ad_id}")
-    public PaginationReviewResponse getReviewsAd(@PathVariable("ad_id") int adId, @RequestBody @Valid GetReviewRequest getReviewRequest) {
+    public PaginationReviewResponse getReviewsAd(@PathVariable("ad_id") int adId, @ModelAttribute @Valid GetReviewRequest getReviewRequest) {
         return reviewService.getReviewByAd(adId, getReviewRequest);
     }
 }

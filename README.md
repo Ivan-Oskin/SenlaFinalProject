@@ -8,16 +8,22 @@
 - Liquibase
 - Maven
 - Docker / Docker Compose
+- Swagger
 
 ## Гайд по запуску
 
 - скачать репозиторий с github,
 - распаковать его в любом удобном месте
-- в cmd перейти в папку ad_board скачанного репозитория -> cd путь_к_проекту\ad_board
-- прописать docker compose build
+- в cmd перейти в папку docker скачанного репозитория -> cd путь_к_проекту\docker
+- прописать docker compose build и дождаться окончания загрузки
 - прописать docker compose up
 
-всё!
+## Гайд по тесту
+
+можно тестировать через swagger в браузере:
+http://localhost:8080/swagger-ui/index.html
+или через постман по адресу:
+http://localhost:8080/
 
 ## Тестовые Пользователи
 

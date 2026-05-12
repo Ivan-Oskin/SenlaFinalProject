@@ -8,11 +8,7 @@ import com.oskin.ad_board.service.DialogService;
 import com.oskin.ad_board.utils.JwtUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/dialog")
@@ -27,7 +23,7 @@ public class DialogController {
     }
 
     @GetMapping
-    public DialogResponse findDialog(@RequestBody @Valid GetDialogRequest getDialogRequest) {
+    public DialogResponse findDialog(@ModelAttribute @Valid GetDialogRequest getDialogRequest) {
         int currentIdFromJwt = jwtUtils.getCurrentId();
         return dialogService.getDialog(currentIdFromJwt, getDialogRequest);
     }

@@ -3,7 +3,7 @@ package com.oskin.ad_board.dto.response;
 import java.util.List;
 
 public class PaginationAdResponse {
-    int thisPage;
+    private int thisPage;
 
     public int getThisPage() {
         return thisPage;

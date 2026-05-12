@@ -2,24 +2,26 @@ package com.oskin.ad_board.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.oskin.ad_board.model.ReviewSortType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 
 import java.time.LocalDateTime;
 
 public class GetReviewRequest {
-    ReviewSortType reviewSortType;
+    private ReviewSortType reviewSortType;
     @Min(value = 1, message = "the count must be more than 1")
-    int count;
-    int lastId;
-    double lastRating;
+    private int count;
+    private int lastId;
+    private int lastRating;
+    @Schema(type = "string", example = "2026-05-12T16:10:53", format = "date-time")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime lastDateTime;
+    private LocalDateTime lastDateTime;
 
-    public double getLastRating() {
+    public int getLastRating() {
         return lastRating;
     }
 
-    public void setLastRating(double lastRating) {
+    public void setLastRating(int lastRating) {
         this.lastRating = lastRating;
     }
 
@@ -51,6 +53,9 @@ public class GetReviewRequest {
     }
 
     public ReviewSortType getReviewSortType() {
+        if (reviewSortType == null) {
+            reviewSortType = ReviewSortType.RATING_DESC;
+        }
         return reviewSortType;
     }
 

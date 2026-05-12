@@ -5,7 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 public class MessageResponse {
-    int id;
+    private int id;
+    private String senderName;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime sendDateTime;
+    private String text;
 
     public int getId() {
         return id;
@@ -14,11 +18,6 @@ public class MessageResponse {
     public void setId(int id) {
         this.id = id;
     }
-
-    String senderName;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime sendDateTime;
-    String text;
 
     public MessageResponse() {
     }

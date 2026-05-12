@@ -5,9 +5,9 @@ import jakarta.validation.constraints.Min;
 
 public class DealRequest {
     @Min(value = 1, message = "the ad id must be more than 1")
-    int adId;
+    private int adId;
     @Min(value = 1, message = "the buyer id must be more than 1")
-    int buyerId;
+    private int buyerId;
 
     public int getAdId() {
         return adId;

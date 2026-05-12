@@ -57,7 +57,7 @@ public class ReviewRepository extends AbstractCrudRepository<Review> {
         ReviewSortType sortType = getReviewRequest.getReviewSortType();
         int count = getReviewRequest.getCount();
         int lastId = getReviewRequest.getLastId();
-        double lastRating = getReviewRequest.getLastRating();
+        int lastRating = getReviewRequest.getLastRating();
         LocalDateTime lastTime = getReviewRequest.getLastDateTime();
         String hql = buildHql(sortType, lastId);
         try {

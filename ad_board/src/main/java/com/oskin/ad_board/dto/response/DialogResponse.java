@@ -3,8 +3,8 @@ package com.oskin.ad_board.dto.response;
 import java.util.List;
 
 public class DialogResponse {
-    String adTitle;
-    int lastId;
+    private String adTitle;
+    private int lastId;
 
     public int getLastId() {
         return lastId;

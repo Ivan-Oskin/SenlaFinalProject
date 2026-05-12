@@ -34,7 +34,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public BooleanResponse save(ProfileRequest profileRequest, int userId) {
+    public ProfileResponse save(ProfileRequest profileRequest, int userId) {
         Optional<Profile> profileOptional = profileRepository.findByUserId(userId);
         if (profileOptional.isPresent()) {
             throw new EntityExistsException("Profile already exists with user id " + userId);
@@ -44,7 +44,7 @@ public class ProfileService {
         Optional<City> cityOptional = cityRepository.findByName(profileRequest.getCityLowerCase());
         City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name = " + profileRequest.getCity()));
         Profile profile = mapperDto.profileRequestToEntity(profileRequest, user, city);
-        return new BooleanResponse(profileRepository.create(profile));
+        return mapperDto.profileToResponse(profileRepository.createAndGet(profile));
     }
 
     @Transactional

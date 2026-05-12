@@ -49,7 +49,7 @@ public class AdService {
     }
 
     @Transactional
-    public BooleanResponse save(AdRequest adRequest, int sellerId) {
+    public AdResponse save(AdRequest adRequest, int sellerId) {
         String cityName = adRequest.getCityLowerCase();
         Optional<User> userOptional = userRepository.findById(sellerId);
         User user = userOptional.orElseThrow(() -> new EntityNotFoundException("not found user with id = " + sellerId));
@@ -59,7 +59,7 @@ public class AdService {
         City city = cityOptional.orElseThrow(() -> new EntityNotFoundException("not found city with name = " + adRequest.getCity()));
         Ad ad = mapperDto.adRequestToEntity(adRequest, user, city);
         ad.setStatus(StatusAd.DRAFT);
-        return new BooleanResponse(adRepository.create(ad));
+        return mapperDto.adToResponse(adRepository.createAndGet(ad));
     }
 
     @Transactional

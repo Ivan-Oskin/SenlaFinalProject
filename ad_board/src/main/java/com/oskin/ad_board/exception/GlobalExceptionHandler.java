@@ -2,6 +2,7 @@ package com.oskin.ad_board.exception;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -59,6 +61,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomExceptionResponse> handlerEntityExistsExceptionException(EntityExistsException e) {
         HttpStatus status = HttpStatus.CONFLICT;
         CustomExceptionResponse customExceptionResponse = new CustomExceptionResponse(status.value(), e.getMessage());
+        return new ResponseEntity<>(customExceptionResponse, buildHeaders(), status);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CustomExceptionResponse> handlerAccessDeniedException(AccessDeniedException e) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        CustomExceptionResponse customExceptionResponse = new CustomExceptionResponse(status.value(), "user must log in or register");
+        return new ResponseEntity<>(customExceptionResponse, buildHeaders(), status);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<CustomExceptionResponse> handlerAuthenticationException(AuthenticationException e) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomExceptionResponse customExceptionResponse = new CustomExceptionResponse(status.value(), "You don't have permission to access this resource");
         return new ResponseEntity<>(customExceptionResponse, buildHeaders(), status);
     }
 

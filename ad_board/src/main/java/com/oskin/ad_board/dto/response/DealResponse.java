@@ -1,6 +1,7 @@
 package com.oskin.ad_board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.oskin.ad_board.model.StatusDeal;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +11,16 @@ public class DealResponse {
     private int buyerId;
     private String adTitle;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime createdDateTime;
+    private LocalDateTime createdDateTime;
+    private StatusDeal statusDeal;
+
+    public StatusDeal getStatusDeal() {
+        return statusDeal;
+    }
+
+    public void setStatusDeal(StatusDeal statusDeal) {
+        this.statusDeal = statusDeal;
+    }
 
     public int getId() {
         return id;
