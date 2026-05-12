@@ -1,8 +1,6 @@
 package com.oskin.ad_board.controller_test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.ad_board.controller.ModerationController;
-import com.oskin.ad_board.dto.request.GetAdToModeration;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.PaginationAdModerationResponse;
 import com.oskin.ad_board.exception.GlobalExceptionHandler;
@@ -33,12 +31,10 @@ public class ModerationControllerTest {
     @Mock
     private AdService adService;
 
-    private ObjectMapper objectMapper;
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        objectMapper = new ObjectMapper();
         mockMvc = MockMvcBuilders.standaloneSetup(moderationController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
@@ -46,22 +42,18 @@ public class ModerationControllerTest {
 
     @Test
     void getModerationList_WhenValidRequest_ShouldReturnOk() throws Exception {
-        GetAdToModeration getAdToModeration = new GetAdToModeration();
-        getAdToModeration.setCount(5);
         Mockito.when(adService.getModerationList(any())).thenReturn(new PaginationAdModerationResponse());
         mockMvc.perform(MockMvcRequestBuilders.get("/moderation")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(getAdToModeration)))
+                        .param("count","10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getModerationList_WhenNoValidCount_ShouldReturnBadRequest() throws Exception {
-        GetAdToModeration getAdToModeration = new GetAdToModeration();
-        getAdToModeration.setCount(0);
         mockMvc.perform(MockMvcRequestBuilders.get("/moderation")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(getAdToModeration)))
+                        .param("count", "-10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 

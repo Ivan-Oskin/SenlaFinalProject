@@ -65,14 +65,16 @@ public class AdServiceTest {
     }
 
     @Test
-    void save_WhenValidRequest_ShouldReturnTrue() {
+    void save_WhenValidRequest_ShouldReturnAdResponse() {
         Mockito.when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
         Mockito.when(profileRepository.findByUserId(anyInt())).thenReturn(Optional.of(new Profile()));
         Mockito.when(cityRepository.findByName(any())).thenReturn(Optional.of(new City()));
         Mockito.when(mapperDto.adRequestToEntity(any(), any(), any())).thenReturn(new Ad());
-        Mockito.when(adRepository.create(any())).thenReturn(true);
-        BooleanResponse booleanResponse = adService.save(adRequest, 1);
-        Assertions.assertTrue(booleanResponse.isBool());
+        Mockito.when(adRepository.createAndGet(any())).thenReturn(new Ad());
+        AdResponse adResponse = new AdResponse();
+        Mockito.when(mapperDto.adToResponse(any())).thenReturn(adResponse);
+        AdResponse validAdResponse = adService.save(adRequest, 1);
+        Assertions.assertEquals(adResponse, validAdResponse);
     }
 
     @Test

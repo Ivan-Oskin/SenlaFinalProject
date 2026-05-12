@@ -80,7 +80,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/reg")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

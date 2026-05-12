@@ -81,7 +81,7 @@ public class DealServiceTest {
     }
 
     @Test
-    void save_WhenValidRequest_ShouldReturnTrue() {
+    void save_WhenValidRequest_ShouldReturnDealResponse() {
         DealRequest dealRequest = new DealRequest();
         dealRequest.setBuyerId(1);
         dealRequest.setAdId(1);
@@ -89,9 +89,11 @@ public class DealServiceTest {
         Mockito.when(adRepository.findById(anyInt())).thenReturn(Optional.of(ad));
         Mockito.when(userRepository.findById(2)).thenReturn(Optional.of(seller));
         Mockito.when(adRepository.update(any())).thenReturn(true);
-        Mockito.when(dealRepository.create(any())).thenReturn(true);
-        BooleanResponse booleanResponse = dealService.save(dealRequest, 2);
-        Assertions.assertTrue(booleanResponse.isBool());
+        Mockito.when(dealRepository.createAndGet(any())).thenReturn(new Deal());
+        DealResponse dealResponse = new DealResponse();
+        Mockito.when(mapperDto.dealToResponse(any())).thenReturn(dealResponse);
+        DealResponse verifyDealResponse = dealService.save(dealRequest, 2);
+        Assertions.assertEquals(dealResponse, verifyDealResponse);
     }
 
     @Test

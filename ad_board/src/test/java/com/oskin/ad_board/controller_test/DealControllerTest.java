@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.ad_board.controller.DealController;
 import com.oskin.ad_board.dto.request.DealRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
+import com.oskin.ad_board.dto.response.DealResponse;
 import com.oskin.ad_board.exception.GlobalExceptionHandler;
 import com.oskin.ad_board.service.DealService;
 import com.oskin.ad_board.utils.JwtUtils;
@@ -55,12 +56,11 @@ public class DealControllerTest {
         dealRequest.setAdId(1);
         dealRequest.setBuyerId(1);
         Mockito.when(jwtUtils.getCurrentId()).thenReturn(2);
-        Mockito.when(dealService.save(any(), anyInt())).thenReturn(new BooleanResponse(true));
+        Mockito.when(dealService.save(any(), anyInt())).thenReturn(new DealResponse());
         mockMvc.perform(MockMvcRequestBuilders.post("/deal")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dealRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bool").value("true"));
+                .andExpect(status().isOk());
     }
 
     @Test

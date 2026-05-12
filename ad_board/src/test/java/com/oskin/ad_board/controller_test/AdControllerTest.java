@@ -3,12 +3,10 @@ package com.oskin.ad_board.controller_test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.ad_board.controller.AdController;
 import com.oskin.ad_board.dto.request.AdRequest;
-import com.oskin.ad_board.dto.request.GetAdRequest;
 import com.oskin.ad_board.dto.response.AdResponse;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.PaginationAdResponse;
 import com.oskin.ad_board.exception.GlobalExceptionHandler;
-import com.oskin.ad_board.model.AdSortType;
 import com.oskin.ad_board.service.AdService;
 import com.oskin.ad_board.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,18 +49,17 @@ public class AdControllerTest {
     }
 
     @Test
-    void create_WhenValidRequest_ShouldReturnTrue() throws Exception {
+    void create_WhenValidRequest_ShouldReturnOk() throws Exception {
         AdRequest adRequest = new AdRequest();
         adRequest.setTitle("title");
         adRequest.setCity("city");
         adRequest.setPrice(2000);
         Mockito.when(jwtUtils.getCurrentId()).thenReturn(2);
-        Mockito.when(adService.save(any(), anyInt())).thenReturn(new BooleanResponse(true));
+        Mockito.when(adService.save(any(), anyInt())).thenReturn(new AdResponse());
         mockMvc.perform(MockMvcRequestBuilders.post("/ad")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(adRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bool").value("true"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -192,38 +189,28 @@ public class AdControllerTest {
 
     @Test
     void findByTitle_WhenValidRequest_ShouldReturnOk() throws Exception {
-        GetAdRequest getAdRequest = new GetAdRequest();
-        getAdRequest.setTitle("test");
-        getAdRequest.setCount(5);
-        getAdRequest.setAdSortType(AdSortType.DEFAULT);
         Mockito.when(adService.findByTitle(any())).thenReturn(new PaginationAdResponse());
         mockMvc.perform(MockMvcRequestBuilders.get("/ad")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getAdRequest)))
-                .andExpect(status().isOk());
+                        .param("title", "test")
+                        .param("count", "10")
+                        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 
     @Test
     void findByTitle_WhenNoValidCount_ShouldReturnBadRequest() throws Exception {
-        GetAdRequest getAdRequest = new GetAdRequest();
-        getAdRequest.setTitle("test");
-        getAdRequest.setCount(0);
-        getAdRequest.setAdSortType(AdSortType.DEFAULT);
         mockMvc.perform(MockMvcRequestBuilders.get("/ad")
+                        .param("title" ,"test")
+                        .param("count","-10")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getAdRequest)))
+                        )
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void findByTitle_WhenNullTitle_ShouldReturnBadRequest() throws Exception {
-        GetAdRequest getAdRequest = new GetAdRequest();
-        getAdRequest.setTitle("");
-        getAdRequest.setCount(1);
-        getAdRequest.setAdSortType(AdSortType.DEFAULT);
         mockMvc.perform(MockMvcRequestBuilders.get("/ad")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getAdRequest)))
+                        .param("count", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 }

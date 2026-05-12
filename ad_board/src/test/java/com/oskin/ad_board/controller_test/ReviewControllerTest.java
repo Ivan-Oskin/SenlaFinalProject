@@ -2,12 +2,11 @@ package com.oskin.ad_board.controller_test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.ad_board.controller.ReviewController;
-import com.oskin.ad_board.dto.request.GetReviewRequest;
 import com.oskin.ad_board.dto.request.ReviewRequest;
 import com.oskin.ad_board.dto.response.BooleanResponse;
 import com.oskin.ad_board.dto.response.PaginationReviewResponse;
+import com.oskin.ad_board.dto.response.ReviewResponse;
 import com.oskin.ad_board.exception.GlobalExceptionHandler;
-import com.oskin.ad_board.model.ReviewSortType;
 import com.oskin.ad_board.service.ReviewService;
 import com.oskin.ad_board.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,12 +54,11 @@ public class ReviewControllerTest {
         reviewRequest.setComment("this good comment");
         reviewRequest.setRating(5);
         Mockito.when(jwtUtils.getCurrentId()).thenReturn(1);
-        Mockito.when(reviewService.save(any(), anyInt(), anyInt())).thenReturn(new BooleanResponse(true));
+        Mockito.when(reviewService.save(any(), anyInt(), anyInt())).thenReturn(new ReviewResponse());
         mockMvc.perform(MockMvcRequestBuilders.post("/review/2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reviewRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bool").value("true"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -85,24 +83,18 @@ public class ReviewControllerTest {
 
     @Test
     void getReviewAd_WhenValidGetReviewRequest_ShouldReturnOk() throws Exception {
-        GetReviewRequest getReviewRequest = new GetReviewRequest();
-        getReviewRequest.setReviewSortType(ReviewSortType.CREATED_DATE_TIME);
-        getReviewRequest.setCount(20);
         Mockito.when(reviewService.getReviewByAd(anyInt(), any())).thenReturn(new PaginationReviewResponse());
         mockMvc.perform(MockMvcRequestBuilders.get("/review/2")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getReviewRequest)))
+                        .param("count", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getReviewAd_WhenNoValidCount_ShouldReturnIsBadRequest() throws Exception {
-        GetReviewRequest getReviewRequest = new GetReviewRequest();
-        getReviewRequest.setReviewSortType(ReviewSortType.CREATED_DATE_TIME);
-        getReviewRequest.setCount(0);
         mockMvc.perform(MockMvcRequestBuilders.get("/review/2")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getReviewRequest)))
+                        .param("count", "-10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 }

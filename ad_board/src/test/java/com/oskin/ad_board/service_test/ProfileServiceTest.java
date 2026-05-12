@@ -40,16 +40,18 @@ public class ProfileServiceTest {
     private UserRepository userRepository;
 
     @Test
-    void save_WhenValidProfile_ShouldReturnTrue() {
+    void save_WhenValidProfile_ShouldReturnProfileResponse() {
         Mockito.when(profileRepository.findByUserId(anyInt())).thenReturn(Optional.empty());
         Mockito.when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
         Mockito.when(cityRepository.findByName(any())).thenReturn(Optional.of(new City()));
         Mockito.when(mapperDto.profileRequestToEntity(any(), any(), any())).thenReturn(new Profile());
-        Mockito.when(profileRepository.create(any())).thenReturn(true);
+        Mockito.when(profileRepository.createAndGet(any())).thenReturn(new Profile());
+        ProfileResponse profileResponse = new ProfileResponse();
+        Mockito.when(mapperDto.profileToResponse(any())).thenReturn(profileResponse);
         ProfileRequest profileRequest = new ProfileRequest();
         profileRequest.setCity("Москва");
-        BooleanResponse booleanResponse = profileService.save(profileRequest, 1);
-        Assertions.assertTrue(booleanResponse.isBool());
+        ProfileResponse verifyProfileResponse = profileService.save(profileRequest, 1);
+        Assertions.assertEquals(profileResponse, verifyProfileResponse);
     }
 
     @Test

@@ -2,7 +2,6 @@ package com.oskin.ad_board.controller_test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.ad_board.controller.DialogController;
-import com.oskin.ad_board.dto.request.GetDialogRequest;
 import com.oskin.ad_board.dto.request.MessageRequest;
 import com.oskin.ad_board.dto.response.DialogResponse;
 import com.oskin.ad_board.dto.response.MessageResponse;
@@ -50,36 +49,31 @@ public class DialogControllerTest {
 
     @Test
     void findDialog_WhenValidRequest_ShouldReturnOk() throws Exception {
-        GetDialogRequest getDialogRequest = new GetDialogRequest();
-        getDialogRequest.setCount(5);
-        getDialogRequest.setAdId(1);
         Mockito.when(jwtUtils.getCurrentId()).thenReturn(1);
         Mockito.when(dialogService.getDialog(anyInt(), any())).thenReturn(new DialogResponse());
         mockMvc.perform(MockMvcRequestBuilders.get("/dialog")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getDialogRequest)))
+                        .param("adId", "1")
+                        .param("count", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void findDialog_WhenNoValidCount_ShouldReturnIsBadRequest() throws Exception {
-        GetDialogRequest getDialogRequest = new GetDialogRequest();
-        getDialogRequest.setCount(0);
-        getDialogRequest.setAdId(1);
         mockMvc.perform(MockMvcRequestBuilders.get("/dialog")
+                        .param("adId", "1")
+                        .param("count", "-10")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getDialogRequest)))
+                        )
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void findDialog_WhenNoValidAdId_ShouldReturnIsBadRequest() throws Exception {
-        GetDialogRequest getDialogRequest = new GetDialogRequest();
-        getDialogRequest.setCount(5);
-        getDialogRequest.setAdId(0);
         mockMvc.perform(MockMvcRequestBuilders.get("/dialog")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getDialogRequest)))
+                        .param("adId", "-1")
+                        .param("count", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 

@@ -23,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.parameters.P;
 
 import java.util.*;
 
@@ -46,15 +45,17 @@ public class ReviewServiceTest {
     private ProfileRepository profileRepository;
 
     @Test
-    public void save_WhenValidRequest_ShouldReturnTrue() {
+    public void save_WhenValidRequest_ShouldReturnReviewResponse() {
         Mockito.when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
         Mockito.when(profileRepository.findByUserId(anyInt())).thenReturn(Optional.of(new Profile()));
         Mockito.when(adRepository.findById(anyInt())).thenReturn(Optional.of(new Ad()));
         Review review = new Review();
         Mockito.when(mapperDto.reviewRequestToEntity(any(), any(), any())).thenReturn(review);
-        Mockito.when(reviewRepository.create(any())).thenReturn(true);
-        BooleanResponse booleanResponse = reviewService.save(new ReviewRequest(), 1, 1);
-        Assertions.assertTrue(booleanResponse.isBool());
+        Mockito.when(reviewRepository.createAndGet(any())).thenReturn(new Review());
+        ReviewResponse reviewResponse = new ReviewResponse();
+        Mockito.when(mapperDto.reviewToResponse(any(), any())).thenReturn(reviewResponse);
+        ReviewResponse verifuReviewResponse = reviewService.save(new ReviewRequest(), 1, 1);
+        Assertions.assertEquals(reviewResponse, verifuReviewResponse);
     }
 
     @Test

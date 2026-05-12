@@ -48,14 +48,6 @@ public class ProfileControllerTest {
     }
 
     @Test
-    void findById_WhenValidRequest_ShouldReturnOk() throws Exception {
-        Mockito.when(profileService.findById(anyInt())).thenReturn(new ProfileResponse());
-        mockMvc.perform(MockMvcRequestBuilders.get("/profile/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void findByUserId_WhenValidRequest_ShouldReturnOk() throws Exception {
         Mockito.when(profileService.findByUserId(anyInt())).thenReturn(new ProfileResponse());
         mockMvc.perform(MockMvcRequestBuilders.get("/profile/user/1")
@@ -71,12 +63,11 @@ public class ProfileControllerTest {
         profileRequest.setName("Иван");
         profileRequest.setSurname("Иванов");
         Mockito.when(jwtUtils.getCurrentId()).thenReturn(1);
-        Mockito.when(profileService.save(any(), anyInt())).thenReturn(new BooleanResponse(true));
+        Mockito.when(profileService.save(any(), anyInt())).thenReturn(new ProfileResponse());
         mockMvc.perform(MockMvcRequestBuilders.post("/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(profileRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bool").value("true"));
+                .andExpect(status().isOk());
     }
 
     @Test
